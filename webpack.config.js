@@ -50,13 +50,15 @@ module.exports = {
       { test: /\.css$/, loaders: ['style', 'css'] },
       { test: /\.(scss|sass)$/, loaders: ['style', 'css', 'sass'] },
       { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff" },
-      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" }
+      { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader" },
+      { test: /\.(jpg|gif)$/, loader: "url-loader" }
+
     ],
     noParse: [/* Regex */]
   },
 
   resolve: {
-    root: [path.resolve("node_modules")],
+    root: [path.resolve("node_modules"), path.resolve("src/lib"), path.resolve("src")],
     extensions: [
       '', '.js', '.jsx',
       '.css', 'sass',
