@@ -4,7 +4,7 @@ import tables from 'config/tables';
 
 class ManageHandler extends React.Component {
 	render() {
-		return <div> CONFIG: {JSON.stringify(tables[this.props.params.table])}</div>
+		return <pre> CONFIG: {JSON.stringify(tables[this.props.params.table], null, 4)}</pre>
 	}
 }
 
