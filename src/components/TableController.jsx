@@ -1,5 +1,5 @@
 import API from 'core/API';
-
+import TableComponent from './TableComponent';
 
 class TableController extends React.Component {
 
@@ -11,12 +11,32 @@ class TableController extends React.Component {
     var {store,actions} = API[this.props.table];
     return (
       <div>
-        <h1>{store.getTableName()}</h1>
+        <TitleHeader tableName={store.getTableName()}></TitleHeader>
         <GenericTable store={store} actions={actions}></GenericTable>
       </div>
 
     )
 	}
+}
+
+class TitleHeader extends React.Component {
+
+  static propTypes = {
+		tableName: React.PropTypes.string.isRequired
+	}
+
+  static styles = {
+    backgroundColor: 'rgb(254, 82, 82)',
+    color: 'white'
+  }
+
+  render() {
+    return (
+        <div style={TitleHeader.styles}>
+          Manage Table: {this.props.tableName}
+        </div>
+    )
+  }
 }
 
 class GenericTable extends React.Component {
@@ -27,9 +47,21 @@ class GenericTable extends React.Component {
 	}
 
   render() {
-    return <pre>{JSON.stringify(this.props.store.getFields(), null, 2)}</pre>
+    var columnsDef = this.props.store.getFields();
+    return (
+      <div>
+        <FiltersComponent></FiltersComponent>
+        <TableComponent data={[]} columnsDef={columnsDef}></TableComponent>
+      </div>
+    )
   }
 
+}
+
+class FiltersComponent extends React.Component {
+  render() {
+    return <div>Aquí irán los filtros</div>
+  }
 }
 
 export default TableController;
