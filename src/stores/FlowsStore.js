@@ -59,7 +59,7 @@ class FlowsStore {
 						label: 'Item',
 						fieldId: 'itemList',
 						get validValues() {
-							return ItemsStore.findAll() || [];
+							return ItemsStore.getAll() || [];
 						},
 						validations: ['required']
 					}

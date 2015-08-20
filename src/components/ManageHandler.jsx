@@ -1,10 +1,10 @@
 import atom from 'lib/state';
 import API from 'core/API';
-import {items,disclaimers,countries,itemsPermssion,tas} from 'config/tables';
+import tables from 'config/tables';
 
 class ManageHandler extends React.Component {
 	render() {
-		return <div>{JSON.stringify(this.props)} CONFIG: {JSON.stringify(items)}</div>
+		return <div> CONFIG: {JSON.stringify(tables[this.props.params.table])}</div>
 	}
 }
 

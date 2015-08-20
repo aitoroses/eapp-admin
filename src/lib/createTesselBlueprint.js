@@ -1,5 +1,6 @@
 import state from 'lib/state';
 import Resource from 'lib/Resource';
+import tables from 'config/tables';
 
 // createTesselBlueprint:: Resource -> String -> String -> [FluxClasses]
 var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
@@ -23,15 +24,22 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
       }
 
       getDefinition() {
+        var t = tables;
+        if (!t) return {}
+        Object.freeze(t);
+        return t[bindKey];
+      }
 
+      getFields() {
+        return this.getDefinition().fields;
       }
 
       getTableName() {
-
+        return this.getDefinition().tableName;
       }
 
       getErrors() {
-        
+
       }
     }
 
