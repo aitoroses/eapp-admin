@@ -44,7 +44,7 @@
   },
   "dependencies": {
     "file-loader": "^0.8.4",
-    "font-awesome": "^4.3.0",
+    "font-awesome": "^4.4.0",
     "js-csp": "^0.4.1",
     "react-bootstrap": "^0.24.5",
     "react-pure-render": "^1.0.2",
