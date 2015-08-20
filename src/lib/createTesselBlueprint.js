@@ -6,38 +6,61 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
 
     class GenericStore {
 
-        state = {}
+      state = {
+        [dataHolderKey]: []
+      }
 
     	constructor() {
     		this.bindState(bindKey);
     	}
-    	findAll() {
+
+    	getAll() {
     		return this.state[dataHolderKey]
     	}
+
+      getCount() {
+        return this.state.count
+      }
+
+      getDefinition() {
+
+      }
+
+      getTableName() {
+
+      }
+
+      getErrors() {
+        
+      }
     }
 
     class GenericActions {
-    	findAll(payload, resolve) {
+
+    	fetchAll(payload, resolve) {
     		var resource = new Resource();
     		resource.findAll(payload, (data) => {
     			this.set({[dataHolderKey]: data})
     			resolve(data)
     		})
     	}
-    	findByPage(page, resolve) {
+
+    	fetchByPage(page, resolve) {
     		var resource = new Resource();
     		resource.findByPage(page.payload, page.firstResult, page.maxResults, (data) => {
     			this.set({[dataHolderKey]: data})
     			resolve(data)
     		})
     	}
-    	count(page, resolve) {
+
+    	fetchCount(page, resolve) {
     		var resource = new Resource();
     		resource.count(page.payload, (data) => {
-    			this.set({[dataHolderKey]: data})
+    			this.set({count: data})
     			resolve(data)
     		})
     	}
+
     	create(payload, resolve, reject){
     		var resource = new Resource();
     		resource.create(payload, resolve).then(() => {
@@ -46,6 +69,7 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
     			reject(e)
     		})
     	}
+
     	delete(payload, resolve, reject){
     		var resource = new Resource();
     		resource.delete(payload, resolve).then(() => {
@@ -54,6 +78,7 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
     			reject(e)
     		})
     	}
+
     	update(payload, resolve, reject){
     		var resource = new Resource();
     		resource.update(payload, resolve).then(() => {
@@ -62,6 +87,10 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
     			reject(e)
     		})
     	}
+
+      executeValidation() {
+
+      }
     }
 
     var store = state.createStore(GenericStore);

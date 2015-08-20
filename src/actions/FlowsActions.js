@@ -6,7 +6,7 @@ import shallowEqual from 'react-pure-render/shallowEqual';
 class FlowsActions {
 
 	queryItems(payload, resolve) {
-		ItemsActions.findAll({}).then((validValues) => {
+		ItemsActions.fetchAll({}).then((validValues) => {
 			var itemList = store.getFields().itemList
 			itemList.config.set({validValues})
 		})

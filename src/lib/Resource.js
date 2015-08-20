@@ -6,31 +6,34 @@ class Resource {
 	}
 
 	findAll(payload, callback) {
-		return request.post(__config.Server + `/${this._resource}/selectbyexample`,payload)
+		return request.post(__config.server + `/${this._resource}/selectbyexample`,payload)
 		.then((req) => {
 			var data = req.body;
 			if(callback) callback(data);
 			return data;
 		})
 	}
+
 	findByPage(payload, firstResult, maxResults, callback) {
-		return request.post(__config.Server + `/${this._resource}/selectbyexample?firstResult=` + firstResult + `&maxResults=` + maxResults, payload)
+		return request.post(__config.server + `/${this._resource}/selectbyexample?firstResult=` + firstResult + `&maxResults=` + maxResults, payload)
 		.then((req) => {
 			var data = req.body;
 			if(callback) callback(data);
 			return data;
 		})
 	}
-    count(payload, callback) {
-        return request.post(__config.Server + `/${this._resource}/count`, payload)
-        .then((req) => {
-            var data = req.body;
-            if(callback) callback(data);
-            return data;
-        })
-    }
+
+  count(payload, callback) {
+      return request.post(__config.server + `/${this._resource}/count`, payload)
+      .then((req) => {
+          var data = req.body;
+          if(callback) callback(data);
+          return data;
+      })
+  }
+
 	create(obj, callback) {
-		return request.post(__config.Server + `/${this._resource}/insert`)
+		return request.post(__config.server + `/${this._resource}/insert`)
 		.send(obj)
 		.then(({body}) => {
 			callback(body);
@@ -39,8 +42,9 @@ class Resource {
 			console.log("Error Insertando");
 		})
 	}
+
 	delete(obj, callback) {
-		return request.put(__config.Server + `/${this._resource}/delete`)
+		return request.put(__config.server + `/${this._resource}/delete`)
 		.send(obj)
 		.then(({body}) => {
 			callback(body);
@@ -49,8 +53,9 @@ class Resource {
 			console.log("Error Eliminando");
 		})
 	}
+	
 	update(obj, callback) {
-		return request.put(__config.Server + `/${this._resource}/update`)
+		return request.put(__config.server + `/${this._resource}/update`)
 		.send(obj)
 		.then(({body}) => {
 			callback(body);
