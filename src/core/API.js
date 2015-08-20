@@ -15,11 +15,11 @@ var api = {
 		store: ItemsStore,
 		actions: ItemsActions
 	},
-	tAreas: {
+	tas: {
 		store: null,
 		actions: null
 	},
-	itemsPer: {
+	itemsPermission: {
 		store: null,
 		actions: null
 	}
