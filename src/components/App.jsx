@@ -3,8 +3,8 @@ import Router from 'react-router';
 import NotFound from './NotFound';
 import App from './AppHandler';
 
-import Playground from './playground';
-
+import Playground from './Playground';
+import ManageHandler from './ManageHandler';
 // Routes
 var routes = (
 
@@ -19,7 +19,7 @@ var routes = (
     <Route name="ItemsPermission" path="ItemsPermission" handler={ItemsPermission} />
     <Route name="Disclaimers" path="Disclaimers" handler={Disclaimers} />
     <Route name="Flows" path="Flows" handler={Flows} />*/}
-
+    <Route name="manage" path="/manage/:itemType" handler={ManageHandler} />
     <Route name="playground" path="playground" handler={Playground} />
 
     <NotFoundRoute handler={NotFound}/>

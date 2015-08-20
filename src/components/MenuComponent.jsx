@@ -61,7 +61,7 @@ class MenuComponent extends React.Component {
                   <li><a href="#/disclaimers"><span className="glyphicon glyphicon-ok-circle marginRight"></span>Disclaimers</a></li>
                 </ul>
               </li>
-              <li><a href="#/countries"><span className="glyphicon glyphicon-map-marker marginRight"></span>Countries</a></li>
+              <li><a href="#/manage/countries"><span className="glyphicon glyphicon-map-marker marginRight"></span>Countries</a></li>
               <li><a href="#/therapeuticalAreas"><span className="glyphicon glyphicon-th marginRight"></span>Therapeutical Areas</a></li>
             </ul>
             </Panel>
