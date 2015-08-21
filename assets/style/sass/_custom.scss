@@ -1,3 +1,52 @@
+.no-padding {
+	padding:0 !important;
+}
+
+.search-toolbar {
+    height:30px;
+    border-collapse: collapse;
+		margin-bottom: 5px;
+    .fa {
+      margin-left:10px;
+      margin-top:5px;
+      cursor:pointer;
+      &.margin-minor {
+        margin-left:10px !important;
+      }
+    }
+    i:hover {
+      position: relative;
+      bottom: 1px;
+    }
+  }
+
+	.search-input {
+    line-height:14px;
+    margin-top:5px;
+  }
+  .search-results {
+    margin-left:20px;
+    &:hover {
+      font-weight: bold;
+      cursor: pointer;
+    }
+  }
+  .icon-blue {
+    color: #2E9AFE !important;
+  }
+
+.public_fixedDataTableCell_cellContent {
+	padding:0 !important;
+}
+
+.public_fixedDataTable_header .public_fixedDataTableCell_cellContent {
+		text-align: center;
+}
+
+.row-selected .public_fixedDataTableCell_main {
+      background-color:#E2E2E5 !important;
+}
+
 .title-margin {
 	padding-top: 6px;
 	background-color: white;

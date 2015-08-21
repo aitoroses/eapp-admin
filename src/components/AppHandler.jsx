@@ -1,8 +1,9 @@
 import {RouteHandler} from 'react-router';
 import MenuComponent from './MenuComponent';
+import atom from 'lib/state';
 
 // Main Handler
-class Handler extends React.Component {
+class Handler extends atom.Component {
   render () {
     return (
       <div className="container no-padding">

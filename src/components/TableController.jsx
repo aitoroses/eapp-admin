@@ -40,21 +40,23 @@ class GenericTable extends React.Component {
 	}
 
   state = {
-    selectedRow:-1
+    selectedRow:null
   }
 
   onEnterEditMode(row) {
     this.setState({
       selectedRow: row
     });
+
+
     console.log('Entrando a modo edicion')
   }
 
   render() {
     var columnsDef = this.props.store.getFields();
-    var data = [['a','b','c','d','e','f','g','h'], ['a','b','c','d','e','f','g','h'], ['a','b','c','d','e','f','g','h']];
+    var data = this.props.store.getAll() || [];	
     return (
-      <div>
+      <div style={{marginLeft:'50px', marginTop:'50px'}} >
         <FiltersComponent></FiltersComponent>
         <TableComponent data={data} columnsDef={columnsDef} selectedRow={this.state.selectedRow} onEnterEditMode={this.onEnterEditMode}></TableComponent>
       </div>
@@ -65,7 +67,14 @@ class GenericTable extends React.Component {
 
 class FiltersComponent extends React.Component {
   render() {
-    return <div>Aquí irán los filtros</div>
+    return (
+			<div className="search-toolbar">
+	      <input className="search-input" type="text" ref="searchText"/>
+	      <i className="fa fa-search fa-lg" onClick={function(){console.log('filtrando')}}></i>
+	      <span className="search-results">Items Found: 5</span>
+	      <i className="fa fa-spinner fa-lg"></i>
+      </div>
+		)
   }
 }
 
