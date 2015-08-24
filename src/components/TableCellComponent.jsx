@@ -1,5 +1,5 @@
 import {decorate} from 'react-mixin';
-import PureComponent from 'react-pure-render/component'
+import shallowEqual from 'react-pure-render/shallowEqual'
 
 var ToggleParentClassMixin = {
     componentDidMount() {
@@ -14,7 +14,7 @@ var ToggleParentClassMixin = {
 }
 
 @decorate(ToggleParentClassMixin)
-class TableCellComponent extends PureComponent {
+class TableCellComponent extends React.Component {
 
   static propTypes = {
     isEditing: React.PropTypes.bool.isRequired,
@@ -23,7 +23,8 @@ class TableCellComponent extends PureComponent {
       React.PropTypes.number
     ]),
     columnDef: React.PropTypes.object.isRequired,
-    onChange: React.PropTypes.func
+    onChange: React.PropTypes.func,
+    row: React.PropTypes.number
   }
 
   static styles = {
@@ -77,10 +78,9 @@ class TableCellComponent extends PureComponent {
     return p.isEditing && p.columnDef.config.editable;
   }
 
-  handleChange(value) {
-    //this.props.onChange(value, )
+  shouldComponentUpdate(nextProps, nextState){
+    return (!shallowEqual(nextProps, this.props) || !shallowEqual(nextState, this.state))
   }
-
 
   render() {
 
@@ -90,7 +90,8 @@ class TableCellComponent extends PureComponent {
       isEditing: inputEditable,
       value: this._getCellValue(),
       columnDef: this.props.columnDef,
-      onChange: this.handleChange
+      onChange: this.props.onChange,
+      row: this.props.row
     }
 
     if(this.props.columnDef.config.type == 'date'){
@@ -117,11 +118,14 @@ class DateCellComponent extends React.Component {
   static propTypes = {
     isEditing: React.PropTypes.bool.isRequired,
     value: React.PropTypes.string,
-    columnDef: React.PropTypes.object.isRequired
+    columnDef: React.PropTypes.object.isRequired,
+    onChange: React.PropTypes.func,
+    row: React.PropTypes.number
   }
 
   handleChange(){
-    console.log('cambiando valor');
+    let ref = this.props.columnDef.key+"_"+this.props.row;
+    this.props.onChange(this.refs[ref].getDOMNode().value, this.props.columnDef.key, this.props.row)
   }
 
   render() {
@@ -136,7 +140,7 @@ class DateCellComponent extends React.Component {
       holder = (
         <input
           className="input-editable"
-          ref="input"
+          ref={this.props.columnDef.key+"_"+this.props.row}
           type="text"
           value={this.props.value}
           onChange={this.handleChange}
@@ -160,12 +164,21 @@ class TextCellComponent extends React.Component {
   static propTypes = {
     isEditing: React.PropTypes.bool.isRequired,
     value: React.PropTypes.string,
-    columnDef: React.PropTypes.object.isRequired
+    columnDef: React.PropTypes.object.isRequired,
+    onChange: React.PropTypes.func,
+    row: React.PropTypes.number
   }
 
-  handleChange(){
-    console.log('cambiando valor');
+  state = {
+    currentValue: this.props.value
   }
+
+  handleChange(e){
+    this.setState({
+      currentValue: e.target.value
+    })
+  }
+
 
   render() {
     var holder;
@@ -179,9 +192,8 @@ class TextCellComponent extends React.Component {
       holder = (
         <input
           className="input-editable"
-          ref="input"
           type="text"
-          value={this.props.value}
+          value={this.state.currentValue}
           onChange={this.handleChange}
           style={style}
         />
@@ -203,11 +215,14 @@ class NumberCellComponent extends React.Component {
   static propTypes = {
     isEditing: React.PropTypes.bool.isRequired,
     value: React.PropTypes.number,
-    columnDef: React.PropTypes.object.isRequired
+    columnDef: React.PropTypes.object.isRequired,
+    onChange: React.PropTypes.func,
+    row: React.PropTypes.number
   }
 
   handleChange(){
-    console.log('cambiando valor');
+    let ref = this.props.columnDef.key+"_"+this.props.row;
+    this.props.onChange(this.refs[ref].getDOMNode().value, this.props.columnDef.key, this.props.row)
   }
 
   render() {
@@ -222,7 +237,7 @@ class NumberCellComponent extends React.Component {
       holder = (
         <input
           className="input-editable"
-          ref="input"
+          ref={this.props.columnDef.key+"_"+this.props.row}
           type="number"
           value={this.props.value}
           onChange={this.handleChange}
@@ -246,11 +261,14 @@ class CheckBoxCellComponent extends React.Component {
   static propTypes = {
     isEditing: React.PropTypes.bool.isRequired,
     value: React.PropTypes.number,
-    columnDef: React.PropTypes.object.isRequired
+    columnDef: React.PropTypes.object.isRequired,
+    onChange: React.PropTypes.func,
+    row: React.PropTypes.number
   }
 
   handleChange(){
-    console.log('cambiando valor');
+    let ref = this.props.columnDef.key+"_"+this.props.row;
+    this.props.onChange(this.refs[ref].getDOMNode().value, this.props.columnDef.key, this.props.row)
   }
 
   render() {
@@ -265,7 +283,7 @@ class CheckBoxCellComponent extends React.Component {
       holder = (
         <input
           className="input-editable"
-          ref="input"
+          ref={this.props.columnDef.key+"_"+this.props.row}
           type="checkbox"
           value={this.props.value}
           onChange={this.handleChange}

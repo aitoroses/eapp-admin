@@ -4,6 +4,7 @@ import atom from 'lib/state';
 
 // Main Handler
 class Handler extends atom.Component {
+
   render () {
     return (
       <div className="container no-padding">
@@ -11,7 +12,7 @@ class Handler extends atom.Component {
           <div className="col-xs-2 no-padding">
             <MenuComponent />
           </div>
-          <div className="col-xs-10 no-padding">
+          <div id="routerComponent" className="col-xs-10 no-padding">
             <RouteHandler/>
           </div>
         </div>
