@@ -87,13 +87,17 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
     		})
     	}
 
-    	update(payload, resolve, reject){
-    		var resource = new Resource();
-    		resource.update(payload, resolve).then(() => {
-    			// resolve(payload)
-    		}).catch((e) => {
-    			reject(e)
-    		})
+    	update(action, resolve, reject){
+        let {onServer, index, payload} = action;
+        this[dataHolderKey].set({[index]: payload});
+        if (onServer) {
+          var resource = new Resource();
+      		resource.update(payload, resolve).then(() => {
+      			// resolve(payload)
+      		}).catch((e) => {
+      			reject(e)
+      		})
+      	}
     	}
 
       executeValidation() {

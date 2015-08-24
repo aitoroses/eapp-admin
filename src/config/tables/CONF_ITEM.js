@@ -1,11 +1,26 @@
 //CONF_ITEM
 var config = {
 
+  normalize(data = []) {
+    const mapToObj = (ele) => {
+      let o = [];
+      for (let field of this.fields) {
+        o = [
+          ...o,
+          ele[field.key]
+        ]
+      }
+      return o;
+    }
+    return data.map(mapToObj)
+  },
+
   tableName: 'CONF_ITEM',
   fields: [
   	{
   		label: 'ITEM_ID',
-  		config: {
+  		key: 'itemId',
+      config: {
   			type: 'number',
   			defaultValue: null,
   			editable: true,
@@ -15,7 +30,8 @@ var config = {
   	},
   	{
   		label:	'ITEM_NAME',
-  		config: {
+  		key: 'itemName',
+      config: {
   			type: 'text',
   			defaultValue: null,
   			editable: true,
@@ -25,7 +41,8 @@ var config = {
   	},
   	{
   		label: 'ITEM_DESCRIPTION',
-  		config: {
+  		key: 'itemDescription',
+      config: {
   			type: 'text',
   			defaultValue: null,
   			editable: true,
@@ -35,7 +52,8 @@ var config = {
   	},
   	{
   		label:	'DATE_CREATION',
-  		config: {
+  		key: 'dateCreation',
+      config: {
   			type: 'date',
   			format: 'MM-DD-YYYY',
   			defaultValue: null,
@@ -44,8 +62,9 @@ var config = {
   		}
   	},
   	{
-  		label:	'USER_CEATION',
-  		config: {
+  		label:	'USER_CREATION',
+  		key: 'userCreation',
+      config: {
   			type: 'text',
   			defaultValue: null,
   			editable: false,
@@ -54,7 +73,8 @@ var config = {
   	},
   	{
   		label:	'DATE_MODIFIED',
-  		config: {
+  		key: 'dateModified',
+      config: {
   			type: 'date',
   			format: 'MM-DD-YYYY',
   			defaultValue: null,
@@ -64,7 +84,8 @@ var config = {
   	},
   	{
   		label:	'USER_MODIFIED',
-  		config: {
+  		key: 'userModified',
+      config: {
   			type: 'text',
   			defaultValue: null,
   			editable: false,
@@ -73,7 +94,8 @@ var config = {
   	},
   	{
   		label:	'DELETED',
-  		config: {
+  		key: 'deleted',
+      config: {
   			type: 'checkbox',
   			defaultValue: 0,
   			editable: false,

@@ -45,7 +45,7 @@ var config = {
   		}
   	},
   	{
-  		label:	'USER_CEATION',
+  		label:	'USER_CREATION',
   		config: {
   			type: 'text',
   			defaultValue: null,
