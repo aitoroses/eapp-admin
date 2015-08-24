@@ -53,7 +53,7 @@ class Resource {
 			console.log("Error Eliminando");
 		})
 	}
-	
+
 	update(obj, callback) {
 		return request.put(__config.server + `/${this._resource}/update`)
 		.send(obj)
@@ -69,61 +69,61 @@ class Resource {
 
 export class ItemsResource extends Resource {
 	constructor(){
-		super("/eappservices/flowstepitem/confitem");
+		super("eappservices/flowstepitem/confitem");
 	}
 }
 
 export class CountriesResource extends Resource {
 	constructor(){
-		super("/np5services/countryandta/np5country");
+		super("np5services/countryandta/np5country");
 	}
 }
 
 export class TasResource extends Resource {
 	constructor(){
-		super("/np5services/countryandta/np5therapeuticalarea");
+		super("np5services/countryandta/np5therapeuticalarea");
 	}
 }
 
 export class ItemsPermissionsResource extends Resource {
 	constructor(){
-		super("/np5services/items/np5itemspermission");
+		super("np5services/items/np5itemspermission");
 	}
 }
 
 export class DisclaimersResource extends Resource {
 	constructor(){
-		super("/np5services/np5confdisclaimer");
+		super("np5services/np5confdisclaimer");
 	}
 }
 
 export class FlowsResource extends Resource {
 	constructor(){
-		super("/eappservices/flowstepitem/confflow");
+		super("eappservices/flowstepitem/confflow");
 	}
 }
 
 export class StepsResource extends Resource {
 	constructor(){
-		super("/eappservices/flowstepitem/confstep");
+		super("eappservices/flowstepitem/confstep");
 	}
 }
 
 export class VariablesResource extends Resource {
 	constructor(){
-		super("/eappservices/varsandrules/confstepvars");
+		super("eappservices/varsandrules/confstepvars");
 	}
 }
 
 export class MasterFieldsResource extends Resource {
 	constructor(){
-		super("/eappservices/fieldandform/conffield");
+		super("eappservices/fieldandform/conffield");
 	}
 }
 
 export class NP5ItemsFlowsTaResource extends Resource {
 	constructor(){
-		super("/np5services/items/np5itemflowta");
+		super("np5services/items/np5itemflowta");
 	}
 }
 

@@ -20,7 +20,7 @@ var routes = (
     <Route name="Disclaimers" path="Disclaimers" handler={Disclaimers} />
     <Route name="Flows" path="Flows" handler={Flows} />*/}
     <Route name="manage" path="/manage/:table" handler={ManageHandler} />
-    <Route name="playground" path="playground" handler={Playground} />
+    <Route name="playground" path="/playground" handler={Playground} />
 
     <NotFoundRoute handler={NotFound}/>
   </Route>
