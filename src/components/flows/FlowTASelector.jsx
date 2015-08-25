@@ -16,6 +16,17 @@ class FlowTASelector extends React.Component {
 		FlowActions.queryTas();
 	}
 
+	handleChange(item, key, list1, list2, dir) {
+		debugger;
+		var l1 = list1.toJS();
+		var l2 = list2.toJS();
+		var obj = l1.filter(function(i){if(i[key]==item){return i}});
+		var pos = l1.map(function(a){return a[key];}).indexOf(parseInt(item));
+		l1.splice(pos,1);
+		l2.push(obj[0]);
+		FlowActions.setListForFlowTas({l1, l2, dir});
+	}
+
 	render() {
 
 		var left = {
@@ -32,7 +43,8 @@ class FlowTASelector extends React.Component {
 			<DualBox left={left}
 			right={right}
 			labelField="taName"
-			valueField="taId" />
+			valueField="taId" 
+			callback={this.handleChange}/>
 		)
 	}
 
