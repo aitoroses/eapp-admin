@@ -1,16 +1,26 @@
 import atom from 'lib/state';
 import {actions as FlowActions} from 'actions/FlowsActions';
+import {store as FlowStore} from 'stores/FlowsStore'
 
 import FlowTASelector from 'components/flows/FlowTASelector';
 import FlowsCreator from 'components/flows/FlowsCreator';
+import FlowsVisualizer from 'components/flows/FlowsVisualizer';
+import FlowFieldMapper from 'components/flows/FlowFieldMapper';
 
 class Playground extends atom.Component {
 
+	componentDidMount(){
+		actions.queryMasterFields();
+	}
+
 	render() {
-		return <FlowTASelector />
+		return (
+			<div>
+			<FlowTASelector />
+			</div>
+		)
 	}
 }
 
 
 export default Playground;
-
