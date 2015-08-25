@@ -9,10 +9,10 @@ class Handler extends atom.Component {
     return (
       <div className="container no-padding">
         <div className="row">
-          <div className="col-xs-2 no-padding">
+          <div className="menu-container no-padding">
             <MenuComponent />
           </div>
-          <div id="routerComponent" className="col-xs-10 no-padding">
+          <div id="routerComponent" className="col-xs-10 no-padding div-container">
             <RouteHandler/>
           </div>
         </div>
