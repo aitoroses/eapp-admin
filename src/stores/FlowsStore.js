@@ -1,6 +1,7 @@
 import state from 'lib/state';
 import ItemsStore from 'stores/ItemsStore';
 import TasStore from 'stores/TasStore';
+import FieldsStore from 'stores/FieldsStore';
 
 //var config = require('lib/config');
 
@@ -11,38 +12,6 @@ class FlowsStore {
 
 		this.state = {
 			createFlow: {
-				flowtas: {
-					masterTas: {
-						runtime: {
-							value: null,
-							error: null
-						},
-						config: {
-							type: 'combo',
-							label: 'Therapeutical Areas',
-							fieldId: 'masterTas',
-							get validValues() {
-								return TasStore.getAll() || [];
-							},
-							validations: ['required']
-						}
-					},
-					flowtas: {
-						runtime: {
-							value: null,
-							error: null
-						},
-						config: {
-							type: 'combo',
-							label: 'Therapeutical Areas Flow',
-							fieldId: 'flowtas',
-							get validValues() {
-								return [];
-							},
-							validations: ['required']
-						}
-					}
-				},
 				fields: {
 					flowId: {
 						runtime: {
@@ -98,13 +67,65 @@ class FlowsStore {
 							validations: ['required']
 						}
 					}
+				},
+				flowfields: {
+					get masterFields() {
+						return FieldsStore.getAll() || [];
+					},
+					get flowfields(){
+						return [];
+					},
+					categories: []
+				},
+				flowtas: {
+					masterTas: {
+						runtime: {
+							value: null,
+							error: null
+						},
+						config: {
+							type: 'combo',
+							label: 'Therapeutical Areas',
+							fieldId: 'masterTas',
+							get validValues() {
+								return TasStore.getAll() || [];
+							},
+							validations: ['required']
+						}
+					},
+					flowtas: {
+						runtime: {
+							value: null,
+							error: null
+						},
+						config: {
+							type: 'combo',
+							label: 'Therapeutical Areas Flow',
+							fieldId: 'flowtas',
+							get validValues() {
+								return [];
+							},
+							validations: ['required']
+						}
+					}
 				}
-			}
+			},
+			categories: [{'name':'GENERAL'},{'name': 'DETAILS'},{'name':'TABLE'}]
 		}
+	}
+
+	getMasterFields() {
+		return this.state.createFlow.flowfields.masterFields.map(function(element){
+			return element.field;
+		});
 	}
 
 	getFields() {
 		return this.state.createFlow.fields;
+	}
+
+	getCategories() {
+		return this.state.categories;
 	}
 
 	getFieldRuntime(fieldId) {
@@ -113,6 +134,14 @@ class FlowsStore {
 
 	getFlowTas() {
 		return this.state.createFlow.flowtas;
+	}
+
+	getCreate() {
+		return this.state.createFlow;
+	}
+
+	getFlowFields() {
+		return this.state.createFlow.flowfields;
 	}
 
 	getFlowTasRuntime(combo) {
@@ -124,3 +153,5 @@ class FlowsStore {
 export var store = state.createStore(FlowsStore);
 
 window.store = store;
+
+store.on("update", function(state){console.log(store.getStateDescriptor().state);})
