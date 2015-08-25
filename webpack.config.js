@@ -54,7 +54,10 @@ module.exports = {
       { test: /\.(jpg|gif)$/, loader: "url-loader" }
 
     ],
-    noParse: [/* Regex */]
+    noParse: [
+      /* Regex */
+      /sweetalert\.min\.js/
+    ]
   },
 
   resolve: {

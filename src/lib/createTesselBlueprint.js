@@ -5,6 +5,11 @@ import tables from 'config/tables';
 // createTesselBlueprint:: Resource -> String -> String -> [FluxClasses]
 var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
 
+    function getStateRef() {
+      let current = state.get();
+      return current[bindKey];
+    }
+
     class GenericStore {
 
       state = {
@@ -30,6 +35,10 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
         return t[bindKey];
       }
 
+      getMaxResultsPerPage() {
+        return 10;
+      }
+
       getFields() {
         return this.getDefinition().fields;
       }
@@ -45,26 +54,40 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
 
     class GenericActions {
 
+      addNew(payload, resolve) {
+        let auxData = [...[], ...this[dataHolderKey]];
+        auxData.unshift(payload);
+        getStateRef().set({[dataHolderKey]: auxData})
+        resolve(auxData)
+      }
+
+      cancelNew(payload, resolve) {
+        let auxData = [...[], ...this[dataHolderKey]];
+        auxData.shift();
+        getStateRef().set({[dataHolderKey]: auxData})
+        resolve(auxData)
+      }
+
     	fetchAll(payload, resolve) {
     		var resource = new Resource();
     		resource.findAll(payload, (data) => {
-    			this.set({[dataHolderKey]: data})
+    			getStateRef().set({[dataHolderKey]: data})
     			resolve(data)
     		})
     	}
 
-    	fetchByPage(page, resolve) {
+    	fetchByPage(query, resolve) {
     		var resource = new Resource();
-    		resource.findByPage(page.payload, page.firstResult, page.maxResults, (data) => {
-    			this.set({[dataHolderKey]: data})
+    		resource.findByPage(query.payload, query.skip, query.limit, (data) => {
+    			getStateRef().set({[dataHolderKey]: data})
     			resolve(data)
     		})
     	}
 
-    	fetchCount(page, resolve) {
+    	fetchCount(payload = {}, resolve) {
     		var resource = new Resource();
-    		resource.count(page.payload, (data) => {
-    			this.set({count: data})
+    		resource.count(payload, (data) => {
+    			getStateRef().set({count: data})
     			resolve(data)
     		})
     	}
@@ -89,7 +112,7 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
 
     	update(action, resolve, reject){
         let {onServer, index, payload} = action;
-        this[dataHolderKey].set({[index]: payload});
+        getStateRef()[dataHolderKey].set({[index]: payload});
         if (onServer) {
           var resource = new Resource();
       		resource.update(payload, resolve).then(() => {

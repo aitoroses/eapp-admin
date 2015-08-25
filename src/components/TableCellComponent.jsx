@@ -1,6 +1,26 @@
 import {decorate} from 'react-mixin';
 import shallowEqual from 'react-pure-render/shallowEqual'
 
+var debounce = function (func, threshold, execAsap) {
+      var timeout;
+
+      return function debounced () {
+          var obj = this, args = arguments;
+          function delayed () {
+              if (!execAsap)
+                  func.apply(obj, args);
+              timeout = null;
+          };
+
+          if (timeout)
+              clearTimeout(timeout);
+          else if (execAsap)
+              func.apply(obj, args);
+
+          timeout = setTimeout(delayed, threshold || 100);
+      };
+  }
+
 var ToggleParentClassMixin = {
     componentDidMount() {
       var node = React.findDOMNode(this);
@@ -24,7 +44,13 @@ class TableCellComponent extends React.Component {
     ]),
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
-    row: React.PropTypes.number
+    row: React.PropTypes.number,
+    column: React.PropTypes.number
+  }
+
+  constructor(props) {
+    super()
+    this.debouncedChange = debounce(props.onChange, 200)
   }
 
   static styles = {
@@ -83,15 +109,19 @@ class TableCellComponent extends React.Component {
   }
 
   render() {
+    console.log("render cell");
 
-    var inputEditable = this.isEditable()
+    var calculated = {
+      isEditing: this.isEditable(),
+      value: this._getCellValue(),
+    }
 
     var props = {
-      isEditing: inputEditable,
-      value: this._getCellValue(),
+      ...calculated,
       columnDef: this.props.columnDef,
-      onChange: this.props.onChange,
-      row: this.props.row
+      onChange: this.debouncedChange,
+      row: this.props.row,
+      column: this.props.column
     }
 
     if(this.props.columnDef.config.type == 'date'){
@@ -120,12 +150,25 @@ class DateCellComponent extends React.Component {
     value: React.PropTypes.string,
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
-    row: React.PropTypes.number
+    row: React.PropTypes.number,
+    column: React.PropTypes.number
   }
 
-  handleChange(){
-    let ref = this.props.columnDef.key+"_"+this.props.row;
-    this.props.onChange(this.refs[ref].getDOMNode().value, this.props.columnDef.key, this.props.row)
+  state = {
+    currentValue: this.props.value
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      currentValue: nextProps.value
+    })
+  }
+
+  handleChange(e){
+    this.setState({
+      currentValue: e.target.value
+    })
+    this.props.onChange(e.target.value, this.props.column)
   }
 
   render() {
@@ -142,8 +185,9 @@ class DateCellComponent extends React.Component {
           className="input-editable"
           ref={this.props.columnDef.key+"_"+this.props.row}
           type="text"
-          value={this.props.value}
+          value={this.state.currentValue}
           onChange={this.handleChange}
+          onBlur={this.handleOnBlur}
           style={style}
         />
       )
@@ -166,19 +210,26 @@ class TextCellComponent extends React.Component {
     value: React.PropTypes.string,
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
-    row: React.PropTypes.number
+    row: React.PropTypes.number,
+    column: React.PropTypes.number
   }
 
   state = {
     currentValue: this.props.value
   }
 
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      currentValue: nextProps.value
+    })
+  }
+
   handleChange(e){
     this.setState({
       currentValue: e.target.value
     })
+    this.props.onChange(e.target.value, this.props.column)
   }
-
 
   render() {
     var holder;
@@ -217,12 +268,25 @@ class NumberCellComponent extends React.Component {
     value: React.PropTypes.number,
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
-    row: React.PropTypes.number
+    row: React.PropTypes.number,
+    column: React.PropTypes.number
   }
 
-  handleChange(){
-    let ref = this.props.columnDef.key+"_"+this.props.row;
-    this.props.onChange(this.refs[ref].getDOMNode().value, this.props.columnDef.key, this.props.row)
+  state = {
+    currentValue: this.props.value
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      currentValue: nextProps.value
+    })
+  }
+
+  handleChange(e){
+    this.setState({
+      currentValue: e.target.value
+    })
+    this.props.onChange(e.target.value, this.props.column)
   }
 
   render() {
@@ -239,8 +303,9 @@ class NumberCellComponent extends React.Component {
           className="input-editable"
           ref={this.props.columnDef.key+"_"+this.props.row}
           type="number"
-          value={this.props.value}
+          value={this.state.currentValue}
           onChange={this.handleChange}
+          onBlur={this.handleOnBlur}
           style={style}
         />
       )
@@ -263,12 +328,25 @@ class CheckBoxCellComponent extends React.Component {
     value: React.PropTypes.number,
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
-    row: React.PropTypes.number
+    row: React.PropTypes.number,
+    column: React.PropTypes.number
   }
 
-  handleChange(){
-    let ref = this.props.columnDef.key+"_"+this.props.row;
-    this.props.onChange(this.refs[ref].getDOMNode().value, this.props.columnDef.key, this.props.row)
+  state = {
+    currentValue: this.props.value
+  }
+
+  componentWillReceiveProps(nextProps){
+    this.setState({
+      currentValue: nextProps.value
+    })
+  }
+
+  handleChange(e){
+    this.setState({
+      currentValue: e.target.value
+    })
+    this.props.onChange(e.target.value, this.props.column)
   }
 
   render() {
@@ -285,8 +363,9 @@ class CheckBoxCellComponent extends React.Component {
           className="input-editable"
           ref={this.props.columnDef.key+"_"+this.props.row}
           type="checkbox"
-          value={this.props.value}
+          value={this.state.currentValue}
           onChange={this.handleChange}
+          onBlur={this.handleOnBlur}
           style={style}
         />
       )

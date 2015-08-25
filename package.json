@@ -37,6 +37,7 @@
     "react-mixin": "^1.2.2",
     "request": "^2.58.0",
     "sass-loader": "^2.0.1",
+    "script-loader": "^0.6.1",
     "style-loader": "^0.12.3",
     "url": "^0.10.3",
     "url-loader": "^0.5.6",
@@ -44,10 +45,12 @@
     "webpack-dev-server": "^1.8.0"
   },
   "dependencies": {
+    "bss-i18n": "^1.0.0",
     "font-awesome": "^4.4.0",
     "js-csp": "^0.4.1",
     "react-bootstrap": "^0.24.5",
     "react-pure-render": "^1.0.2",
+    "sweetalert": "^1.1.0",
     "tessel-js": "^1.3.1",
     "transducers.js": "^0.3.2"
   }

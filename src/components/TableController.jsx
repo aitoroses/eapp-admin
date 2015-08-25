@@ -1,5 +1,6 @@
 import API from 'core/API';
 import TableComponent from './TableComponent';
+import swal from 'sweetalert';
 
 const {PropTypes: {string, func, number, object, bool}, Component} = React;
 
@@ -10,12 +11,18 @@ class TableController extends Component {
 		width: number.isRequired
 	}
 
+	constructor(props) {
+		super();
+		var {store,actions} = API[props.table];
+		this.store = store;
+		this.actions = actions;
+	}
+
 	render() {
-    var {store,actions} = API[this.props.table];
     return (
       <div>
-        <AdminToolHeader>{store.getTableName() + " Table Administration"}</AdminToolHeader>
-        <GenericTable width={this.props.width} store={store} actions={actions}></GenericTable>
+        <AdminToolHeader>{this.store.getTableName() + " Table Administration"}</AdminToolHeader>
+        <GenericTable width={this.props.width} store={this.store} actions={this.actions}></GenericTable>
       </div>
 
     )
@@ -45,24 +52,55 @@ class GenericTable extends React.Component {
 	}
 
   state = {
-    selectedRow:null
+    selectedRow:null,
+		newRow:null
   }
 
-	onChange(value, key, row){
-		let currentObj = this.props.store.getAll()[row].toJS();
+	onSave(arrayValue, row){
+		let config = this.props.store.getDefinition();
+		let newObject = config.toObject(arrayValue);
 		let action = {
 			onServer: true,
 			index:row,
-			payload: {...currentObj, [key]: value}
+			payload: newObject
 		}
 		this.props.actions.update(action);
 	}
 
+	onAddNewRow(){
+		if(this.state.selectedRow!=null || this.state.newRow!=null) {
+				swal('','You are already editing a row. Please save or discard changes.');
+		} else {
+			let config = this.props.store.getDefinition();
+			let newObj = config.getNew();
+			this.props.actions.addNew(newObj);
+			setTimeout(function(){
+				this.setState({
+		      newRow:0,
+					selectedRow: 0
+	    	})}.bind(this))
+		}
+
+	}
+
+	onCancelAddNewRow() {
+		this.props.actions.cancelNew();
+		setTimeout(function(){
+			this.setState({
+				selectedRow: null,
+				newRow:null
+			})}.bind(this))
+	}
+
   onEnterEditMode(row) {
-    this.setState({
-      selectedRow: row
-    });
-    console.log('Entrando a modo edicion')
+		if(this.state.selectedRow!=null || this.state.newRow!=null) {
+				swal('','You are already editing a row. Please save or discard changes.');
+		} else {
+	    this.setState({
+	      selectedRow: row
+	    });
+	    console.log('Entrando a modo edicion')
+		}
   }
 
 	onExitEditMode() {
@@ -74,7 +112,7 @@ class GenericTable extends React.Component {
 
 	getTransformedData(){
 		let config = this.props.store.getDefinition();
-		return config.normalize(this.props.store.getAll());
+		return config.toArray(this.props.store.getAll());
 	}
 
 	calculateColumnsWidth(columnsDef) {
@@ -100,9 +138,9 @@ class GenericTable extends React.Component {
 
     return (
       <div style={{marginLeft:'50px', marginTop:'50px'}} >
-        <FiltersComponent  width={width}></FiltersComponent>
-        <TableComponent columnsWidth={columnsWidth} width={width} data={data} columnsDef={columnsDef} selectedRow={this.state.selectedRow} onEnterEditMode={this.onEnterEditMode} onExitEditMode={this.onExitEditMode} onChange={this.onChange}></TableComponent>
-				<FooterComponent  width={width}></FooterComponent>
+        <FiltersComponent  store={this.props.store} actions={this.props.actions} width={width}></FiltersComponent>
+        <TableComponent columnsWidth={columnsWidth} width={width} data={data} columnsDef={columnsDef} newRow={this.state.newRow} selectedRow={this.state.selectedRow} onEnterEditMode={this.onEnterEditMode} onExitEditMode={this.onExitEditMode} onCancelAddNewRow={this.onCancelAddNewRow} onSave={this.onSave}></TableComponent>
+				<FooterComponent  addRowFunc={this.onAddNewRow} width={width}></FooterComponent>
       </div>
     )
   }
@@ -112,17 +150,52 @@ class GenericTable extends React.Component {
 class FiltersComponent extends React.Component {
 
 	static propTypes = {
-		width: number.isRequired
+		width: number.isRequired,
+		store: object.isRequired,
+		actions: object.isRequired
+	}
+
+	state = {
+		loading: true
+	}
+
+	handleRefresh() {
+		this.setState({
+			loading: true
+		});
+		this.props.actions.fetchCount().then(() => this.setState({ loading: false }));
+	}
+
+	componentDidMount() {
+		this.props.actions.fetchCount().then(
+			() => {
+
+				this.setState({
+					loading: false
+				})
+
+			}
+
+		);
+		let query = {
+			payload: {},
+			skip: 0,
+			limit: this.props.store.getMaxResultsPerPage()
+		}
+		this.props.actions.fetchByPage(query)
 	}
 
   render() {
 		var widthStyle = {width: this.props.width} || {width: '0px'};
+		var count = this.props.store.getCount();
     return (
 			<div className="search-toolbar" style={widthStyle}>
 	      <input className="search-input" type="text" ref="searchText"/>
 	      <i className="fa fa-search fa-lg" onClick={function(){console.log('filtrando')}}></i>
-	      <span className="search-results">Items Found: 5</span>
-	      <i className="fa fa-spinner fa-lg"></i>
+	      {!this.state.loading?
+					<span className="search-results" onClick={this.handleRefresh}>Items Found: {count}</span> :
+	      	<i className="fa fa-spinner fa-lg"></i>
+				}
       </div>
 		)
   }
@@ -131,11 +204,12 @@ class FiltersComponent extends React.Component {
 class FooterComponent extends React.Component {
 
 	static propTypes = {
-		width: number.isRequired
+		width: number.isRequired,
+		addRowFunc: func
 	}
 
 	handleAddRow(){
-		console.log("Añadir Fila");
+		this.props.addRowFunc();
 	}
 
   render() {
