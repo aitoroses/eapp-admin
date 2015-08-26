@@ -1,6 +1,6 @@
 var Nocker = require('nocker');
 
-var itemsCollection = require('./mock-db/items-collection')
+var itemsCollection = require('./mock-db/items')
 
 Nocker.register([
   {
