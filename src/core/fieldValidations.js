@@ -39,7 +39,7 @@ var validationRules = {
 				var regExp = new RegExp(pattern);
 				return regExp.test(str);
 			}
-			}
+		}
 	},
 	checkbox: {
 

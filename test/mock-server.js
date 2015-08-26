@@ -7,6 +7,12 @@ Nocker.register([
     reply() {
       return require('./fixtures/tas');
     }
+  }, {
+    method: 'POST',
+    path: '/eappservices/flowstepitem/confitem/count',
+    reply() {
+      return 50;
+    }
   }
 ])
 
