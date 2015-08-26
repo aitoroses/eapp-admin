@@ -16,27 +16,27 @@ class FlowTASelector extends React.Component {
 		FlowActions.queryTas();
 	}
 
-	handleChange(item, key, list1, list2, dir) {
+	handleChange(item, list1, list2) {
 		debugger;
-		var l1 = list1.toJS();
-		var l2 = list2.toJS();
-		var obj = l1.filter(function(i){if(i[key]==item){return i}});
-		var pos = l1.map(function(a){return a[key];}).indexOf(parseInt(item));
-		l1.splice(pos,1);
-		l2.push(obj[0]);
-		FlowActions.setListForFlowTas({l1, l2, dir});
+		let index = list1.indexOf(item);
+		let l1 = [
+			...list1.slice(0, index),
+			...list1.slice(index+1, list1.length-1)
+		];
+		let l2 = [...list2, list1[index]];
+		FlowActions.setListForFlowTas([l1, l2]);
 	}
 
 	render() {
 
 		var left = {
 			title: "A",
-			list: store.getFlowTas().masterTas.config.validValues
+			list: store.getFlowTas().masterTas.list
 		}
 
 		var right = {
 			title: 'B',
-			list: store.getFlowTas().flowtas.config.validValues
+			list: store.getFlowTas().flowtas.list
 		}
 
 		return (

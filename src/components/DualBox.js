@@ -4,17 +4,10 @@ const PropTypes = React.PropTypes;
 
 class DualBox extends React.Component {
 
-	changeList = (item, key, list1, list2, dir) => {
-		if(item){
-			/*var l1 = list1.toJS();
-			var l2 = list2.toJS();
-			var obj = l1.filter(function(i){if(i[key]==item){return i}});
-			var pos = l1.map(function(a){return a[key];}).indexOf(parseInt(item));
-			l1.splice(pos,1);
-			l2.push(obj[0]);
-			this.props.callback(l1, l2, dir);*/
-			this.props.callback(item, key, list1, list2, dir);
-			this.handleChange(null);
+	changeList = (item, list1, list2) => {
+		if(item && list1.indexOf(item)>-1){
+			this.props.callback(item, list1, list2);
+			this.setState({targetItem: null});
 		}
 	}
 
@@ -30,12 +23,12 @@ class DualBox extends React.Component {
 		super(props);
 
 		this.state = {
-			i: null
+			targetItem: null
 		}
 	}
 
-	handleChange(i) {
-		this.setState({i});
+	handleChange(targetItem) {
+		this.setState({targetItem});
 	}
 
 	render() {
@@ -47,8 +40,8 @@ class DualBox extends React.Component {
 					labelField={this.props.labelField}
 					valueField={this.props.valueField}
 					onChange={this.handleChange.bind(this)} />
-				<button className="button blue-color" onClick={() => this.changeList(this.state.i, this.props.valueField, this.props.right.list, this.props.left.list, "left")}><i className="fa fa-chevron-left"></i></button>
-				<button className="button blue-color" onClick={() => this.changeList(this.state.i, this.props.valueField, this.props.left.list, this.props.right.list, "right")}><i className="fa fa-chevron-right"></i></button>
+				<button className="button blue-color" onClick={() => this.changeList(this.state.targetItem, this.props.right.list, this.props.left.list)}><i className="fa fa-chevron-left"></i></button>
+				<button className="button blue-color" onClick={() => this.changeList(this.state.targetItem, this.props.left.list, this.props.right.list)}><i className="fa fa-chevron-right"></i></button>
 				<Box label={this.props.right.title}
 					options={this.props.right.list}
 					labelField={this.props.labelField}
