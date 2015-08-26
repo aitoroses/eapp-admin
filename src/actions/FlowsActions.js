@@ -17,7 +17,7 @@ class FlowsActions {
 	queryTas(payload, resolve) {
 		TasActions.fetchAll({}).then((validValues) => {
 			var masterTas = FlowsStore.getFlowTas().masterTas
-			masterTas.config.set({validValues})
+			masterTas.set({"list": validValues})
 		})
 	}
 
@@ -34,17 +34,28 @@ class FlowsActions {
 		})
 	}
 
-	setListForFlowTas({l1, l2, dir}, resolve) {
-		var flowtas = FlowsStore.getCreate();
-		var mutable = flowtas.flowtas.toJS();
-		if(dir=="right") {
-			mutable.masterTas.config.validValues = l1;
-			mutable.flowtas.config.validValues = l2;
-		}else {
-			mutable.masterTas.config.validValues = l2;
-			mutable.flowtas.config.validValues = l1;
-		}
-		var updated = flowtas.set({flowtas: mutable});
+	setListForFlowTas(payload, resolve) {
+		let [list1, list2] = payload;
+
+		var myBranch = FlowsStore.getFlowTas();
+
+		// Temporal solution, it should work with trasanctions.
+		// Update masterTas list
+		var masterTas = myBranch.masterTas.toJS();
+		masterTas.list = list1;
+		var updated = myBranch.set({masterTas});
+
+		// Update flowtas list
+		var flowtas = updated.flowtas.toJS();
+		flowtas.list = list2;
+		var updated = updated.set({flowtas});
+
+		/*var trans = flowtas.transact();
+
+		trans.masterTas.list = list1;
+		trans.flowtas.list = list2;
+
+		var updated = flowtas.run();*/
 		resolve(updated);
 	}
 

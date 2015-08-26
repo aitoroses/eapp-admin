@@ -6,6 +6,7 @@ import FlowTASelector from 'components/flows/FlowTASelector';
 import FlowsCreator from 'components/flows/FlowsCreator';
 import FlowsVisualizer from 'components/flows/FlowsVisualizer';
 import FlowFieldMapper from 'components/flows/FlowFieldMapper';
+import FlowStepVarAssign from 'components/flows/FlowStepVarAssign';
 
 class Playground extends atom.Component {
 

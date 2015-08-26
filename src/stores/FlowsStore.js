@@ -79,34 +79,10 @@ class FlowsStore {
 				},
 				flowtas: {
 					masterTas: {
-						runtime: {
-							value: null,
-							error: null
-						},
-						config: {
-							type: 'combo',
-							label: 'Therapeutical Areas',
-							fieldId: 'masterTas',
-							get validValues() {
-								return TasStore.getAll() || [];
-							},
-							validations: ['required']
-						}
+						list: []
 					},
 					flowtas: {
-						runtime: {
-							value: null,
-							error: null
-						},
-						config: {
-							type: 'combo',
-							label: 'Therapeutical Areas Flow',
-							fieldId: 'flowtas',
-							get validValues() {
-								return [];
-							},
-							validations: ['required']
-						}
+						list: []
 					}
 				}
 			},

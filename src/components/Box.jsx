@@ -74,7 +74,8 @@ class Box extends React.Component {
 	}
 
 	handleChange(e) {
-		this.props.onChange(e.target.value);
+		let item = this.props.options.filter( item => e.target.value == item[this.props.valueField] )[0];
+		this.props.onChange(item);
 	}
 
 	renderInput() {
