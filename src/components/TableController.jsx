@@ -1,7 +1,9 @@
 import API from 'core/API';
+import {getNew, toObject, toArray} from 'config/tables';
 import TableComponent from './TableComponent';
 import swal from 'sweetalert';
 import PureComponent from 'react-pure-render/Component'
+import {getElementArray, PaginationNumber, PaginationDecrease, PaginationIncrease} from 'lib/paginationUtils';
 
 const {PropTypes: {string, func, number, object, bool}, Component} = React;
 
@@ -59,7 +61,7 @@ class GenericTable extends React.Component {
 
 	onSave(arrayValue, row){
 		let config = this.props.store.getDefinition();
-		let newObject = config.toObject(arrayValue);
+		let newObject = toObject.call(config, arrayValue);
 		let action = {
 			onServer: true,
 			index:row,
@@ -73,7 +75,7 @@ class GenericTable extends React.Component {
 				swal('','You are already editing a row. Please save or discard changes.');
 		} else {
 			let config = this.props.store.getDefinition();
-			let newObj = config.getNew();
+			let newObj = getNew.call(config);
 			this.props.actions.addNew(newObj);
 			setTimeout(function(){
 				this.setState({
@@ -81,7 +83,6 @@ class GenericTable extends React.Component {
 					selectedRow: 0
 	    	})}.bind(this))
 		}
-
 	}
 
 	onCancelAddNewRow() {
@@ -111,7 +112,7 @@ class GenericTable extends React.Component {
 
 	getTransformedData(){
 		let config = this.props.store.getDefinition();
-		return config.toArray(this.props.store.getAll());
+		return toArray.call(config, this.props.store.getAll());
 	}
 
 	calculateColumnsWidth(columnsDef) {
@@ -134,12 +135,12 @@ class GenericTable extends React.Component {
     var data = this.getTransformedData() || [];
 		var columnsWidth = this.props.width==0 ? [] : this.calculateColumnsWidth(columnsDef);
 		var width = this.props.width || 0;
-
+		var perPage = this.props.store.getMaxResultsPerPage();
     return (
       <div style={{marginLeft:'50px', marginTop:'50px'}} >
         <FiltersComponent  store={this.props.store} actions={this.props.actions} width={width}></FiltersComponent>
         <TableComponent columnsWidth={columnsWidth} width={width} data={data} columnsDef={columnsDef} newRow={this.state.newRow} selectedRow={this.state.selectedRow} onEnterEditMode={this.onEnterEditMode} onExitEditMode={this.onExitEditMode} onCancelAddNewRow={this.onCancelAddNewRow} onSave={this.onSave}></TableComponent>
-				<FooterComponent  addRowFunc={this.onAddNewRow} width={width}></FooterComponent>
+				<FooterComponent  perPage={perPage} addRowFunc={this.onAddNewRow} width={width}></FooterComponent>
       </div>
     )
   }
@@ -160,7 +161,6 @@ class FiltersComponent extends React.Component {
 	}
 
 	handleError(e) {
-		debugger
 		this.setState({
 			loading: false,
 			error: true
@@ -186,10 +186,11 @@ class FiltersComponent extends React.Component {
 
   render() {
 		let widthStyle = {width: this.props.width} || {width: '0px'};
-		let count = this.props.store.getCount();
+		let count = this.props.store.getCount() || 0;
 		let perPage = this.props.store.getMaxResultsPerPage();
 		let actions = this.props.actions;
 		let isLoading = this.state.loading;
+		let isError = this.state.error;
     return (
 			<div className="search-toolbar" style={widthStyle}>
 	      <input className="search-input" type="text" ref="searchText"/>
@@ -198,7 +199,7 @@ class FiltersComponent extends React.Component {
 					<span className="search-results" onClick={this.handleRefresh}>Items Found: {count}</span> :
 	      	<i className="fa fa-spinner fa-lg"></i>
 				}
-				<PaginationComponent isLoading={isLoading} perPage={perPage} count={count} actions={actions}></PaginationComponent>
+				<PaginationComponent isError={isError} isLoading={isLoading} perPage={perPage} visible={5} count={count} actions={actions}></PaginationComponent>
       </div>
 		)
   }
@@ -208,7 +209,8 @@ class FooterComponent extends React.Component {
 
 	static propTypes = {
 		width: number.isRequired,
-		addRowFunc: func
+		addRowFunc: func,
+		perPage: number
 	}
 
 	handleAddRow(){
@@ -217,9 +219,11 @@ class FooterComponent extends React.Component {
 
   render() {
 		var widthStyle = {width: this.props.width} || {width: '0px'};
+		var itemsCount = this.props.perPage || '...';
     return (
 			<div className="footer-toolbar" style={widthStyle}>
-	      <button onClick={this.handleAddRow}><i className="fa fa-plus"></i> Add</button>
+				<div style={{float:'left'}}>Items per Page: {itemsCount}</div>
+	      <div style={{float:'right'}}><button onClick={this.handleAddRow}><i className="fa fa-plus"></i> Add</button></div>
       </div>
 		)
   }
@@ -232,103 +236,171 @@ class PaginationComponent extends PureComponent {
 		perPage: number.isRequired,
 		count: number,
 		actions: object.isRequired,
-		isLoading: bool.isRequired
+		isLoading: bool.isRequired,
+		isError: bool.isRequired
 	}
 
-
-
-	static styles = {
-    selectedPage: {
-			backgroundColor: '#565151',
-			color: 'white',
-			padding: '2px',
-			cursor:'pointer',
-			fontWeight:'bold'
-		},
-    unselectedPage: {
-			color:'blue',
-			textDecoration: 'underline',
-			cursor:'pointer'
-		},
-		marker: {
-			color:'blue',
-			cursor:'pointer',
-			fontSize:'15px'
-		}
-  }
+	static contextTypes = {
+		router: func.isRequired
+	}
 
 	constructor(props){
 		super(props);
-
 		this.state = {
-		  current: 1,
-		  perPage: this.props.perPage,
-		  count: this.props.count,
-		  visible: 5,
+		  current: 1
 		}
 
 		this.state.pageArray = this.getElementArray()
 	}
 
-	decreasePage(){
-    if(this.state.current ==1) return
-    this.setPage(this.state.current-1);
-  }
+	getElementArray(more) {
+		return getElementArray({...this.state, ...this.props, ...more});
+	}
 
-  increasePage(){
-    if(this.state.current == this.state.visible) return
-    this.setPage(this.state.current+1);
-  }
+	componentWillReceiveProps(nextProps) {
+		if(nextProps.count!=this.props.count){
+			this.setState({
+				pageArray: this.getElementArray(nextProps)
+			})
+		}
+	}
 
   setPage(p) {
-		if(p>0 && p<(this.state.visible+1)){
+		let page = (
+			p.target.innerText == "<" ? (this.state.current -1):
+		  p.target.innerText == ">" ? (this.state.current +1): parseInt(p.target.innerText)
+		)
+		if(page>0 && page<(this.props.visible+1)){
+			let auxState = {...this.state};
+			auxState.current = page;
       this.setState({
-        current: p,
-        pageArray: this.getElementArray(p)
+        current: page
       })
 			//Hacer el fetch para la pagina P
 			let query = {
 				payload: {},
-				skip: (p*this.state.perPage) - this.state.perPage +1,
-				limit: this.state.perPage
+				skip: (page*this.props.perPage) - this.props.perPage,
+				limit: this.props.perPage
 			}
-			this.props.actions.fetchByPage(query)
+			this.props.actions.fetchByPage(query).then(() => {
+				this.setState({
+					pageArray: this.getElementArray()
+				})
+			})
 		}
 	}
 
-	getElementArray(p) {
-		let current = p || this.state.current;
-	  var array = [];
-	  for (let i = 0; i < this.state.visible; i++) {
-	      array[i] = i + current;
-	  }
-	  return array;
-	}
-
-
-
 	render() {
 
-      if(this.state.pageArray.length == 0 || this.props.isLoading) {
-        return (<span></span>)
+      if(this.state.pageArray.length == 0 || this.props.isLoading || this.props.isError) {
+        return (<div></div>)
       }
       else {
-				var markerStyle = PaginationComponent.styles.marker;
-				var selectedStyle = PaginationComponent.styles.selectedPage;
-				var unselectedStyle = PaginationComponent.styles.unselectedPage;
-
-        return (
-            <span>
-              {this.state.current ==1? null: <span style={markerStyle} onClick={this.decreasePage}>&laquo;</span>}&nbsp;
-                {this.state.pageArray.map((ele, index) => (
-                  <span onClick={this.setPage.bind(this,ele)} key={"page_"+index}><span style={this.state.currentSelectedPage==ele ?  selectedStyle : unselectedStyle}><span >{ele}</span></span>&nbsp;</span>
-                ))}
-              {this.state.current == this.state.visible ? null: <span style={markerStyle} onClick={this.increasePage}>&raquo;</span>}&nbsp;
-            </span>
-        )
+				let onClick = this.setPage;
+				let current = this.state.current;
+				let pageArray = this.state.pageArray;
+				return renderPagination(pageArray, current, onClick);
       }
   }
 }
 
+class PaginationLayoutView extends React.Component {
+	static style = {
+		float: 'right',
+		marginTop: '8px'
+	}
+	render() {
+		return (
+			<div style={PaginationLayoutView.style}>
+				{this.props.children}
+			</div>
+		)
+	}
+}
+
+
+class PaginationNumberView extends React.Component {
+
+	static styles = {
+    selectedPage: {
+			backgroundColor: '#565151',
+			color: 'white',
+			cursor:'pointer',
+			fontWeight:'bold',
+			padding: '5px 5px 5px 5px',
+			border: '1px solid #C5C3C3',
+			borderRadius: '2px'
+		},
+    unselectedPage: {
+			color:'blue',
+			textDecoration: 'underline',
+			cursor:'pointer',
+			padding: '5px 5px 5px 5px',
+			border: '1px solid #C5C3C3',
+			borderRadius: '2px'
+		}
+	}
+	render() {
+		let style = this.props.active ? PaginationNumberView.styles.selectedPage : PaginationNumberView.styles.unselectedPage;
+		return (<span onClick={this.props.onClick} style={style}>{this.props.value}</span>)
+	}
+}
+
+class PaginationIncreaseView extends React.Component {
+	static style = {
+		color:'blue',
+		cursor:'pointer',
+		fontSize:'11px',
+		padding: '5px 5px 5px 5px',
+		border: '1px solid #C5C3C3',
+		borderRadius: '2px'
+	}
+	render() {
+		let style = PaginationIncreaseView.style
+		return (<span onClick={this.props.onClick} style={style}>{this.props.value}</span>)
+	}
+}
+
+class PaginationDecreaseView extends React.Component {
+	static style = {
+		color:'blue',
+		cursor:'pointer',
+		fontSize:'11px',
+		padding: '5px 5px 5px 5px',
+		border: '1px solid #C5C3C3',
+		borderRadius: '2px'
+	}
+	render() {
+		let style = PaginationDecreaseView.style
+		return (<span onClick={this.props.onClick} style={style}>{this.props.value}</span>)
+	}
+}
+
+function renderPagination(pageArray, current, onClick) {
+	function mapToComponent(el, index) {
+		return (
+			el instanceof PaginationNumber ?   <PaginationNumberView key={'number_'+index} onClick={onClick} active={(current==el._value)} value={el._value}/> :
+			el instanceof PaginationDecrease ? <PaginationDecreaseView key={'decrease_'+index} onClick={onClick} value={el._value}/>:
+		  el instanceof PaginationIncrease ? <PaginationIncreaseView key={'increase_'+index} onClick={onClick} value={el._value}/ > : <div className="no-element"></div>
+		)
+	}
+
+	function hasIncreaseElement(array){
+		let res = false;
+		array.forEach((el) => {
+			if(el instanceof PaginationIncrease){
+				res=true;
+			}
+		})
+		return res
+	}
+
+	return (
+		<PaginationLayoutView>
+		  {pageArray.map(mapToComponent)}
+			{hasIncreaseElement(pageArray) ? null: <div style={{width:'20px', display:'inline-block'}}>{' '}</div>}
+		</PaginationLayoutView>
+	)
+}
 
 export default TableController;

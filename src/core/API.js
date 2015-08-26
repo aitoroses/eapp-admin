@@ -1,6 +1,7 @@
 import ItemsActions from 'actions/ItemsActions'
 import ItemsStore from 'stores/ItemsStore'
-
+import TasActions from 'actions/TasActions'
+import TasStore from 'stores/TasStore'
 var api = {
 
 	countries: {
@@ -16,8 +17,8 @@ var api = {
 		actions: ItemsActions
 	},
 	tas: {
-		store: null,
-		actions: null
+		store: TasStore,
+		actions: TasActions
 	},
 	itemsPermission: {
 		store: null,

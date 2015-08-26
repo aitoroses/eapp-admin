@@ -1,45 +1,6 @@
 //CONF_ITEM
 var config = {
 
-  getNew() {
-    let o = {};
-    for (let field of this.fields) {
-      o = {
-        ...o,
-        [field.key]: null
-      }
-    }
-    return o;
-  },
-
-  toObject(data = []) {
-    const arrayToObj = (data) => {
-      let o = {};
-      for (let [index, field] of this.fields.entries()) {
-        o = {
-          ...o,
-          [field.key]: data[index]
-        }
-      }
-      return o;
-    }
-    return arrayToObj(data)
-  },
-
-  toArray(data = []) {
-    const mapToObj = (ele) => {
-      let o = [];
-      for (let field of this.fields) {
-        o = [
-          ...o,
-          ele[field.key]
-        ]
-      }
-      return o;
-    }
-    return data.map(mapToObj)
-  },
-
   tableName: 'CONF_ITEM',
   fields: [
   	{

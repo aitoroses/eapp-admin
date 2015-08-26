@@ -131,7 +131,7 @@ class TableComponent extends PureComponent {
 	render() {
     return (
       <Table
-        maxHeight={440}
+        maxHeight={540}
         width={this.props.width}
         rowsCount={this.props.data.length}
         rowHeight={50}
