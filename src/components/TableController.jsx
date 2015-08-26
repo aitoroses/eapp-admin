@@ -1,6 +1,7 @@
 import API from 'core/API';
 import TableComponent from './TableComponent';
 import swal from 'sweetalert';
+import PureComponent from 'react-pure-render/Component'
 
 const {PropTypes: {string, func, number, object, bool}, Component} = React;
 
@@ -99,7 +100,6 @@ class GenericTable extends React.Component {
 	    this.setState({
 	      selectedRow: row
 	    });
-	    console.log('Entrando a modo edicion')
 		}
   }
 
@@ -107,7 +107,6 @@ class GenericTable extends React.Component {
     this.setState({
       selectedRow: null
     });
-    console.log('Saliendo de modo edicion')
   }
 
 	getTransformedData(){
@@ -156,46 +155,50 @@ class FiltersComponent extends React.Component {
 	}
 
 	state = {
-		loading: true
+		loading: true,
+		error: false
+	}
+
+	handleError(e) {
+		debugger
+		this.setState({
+			loading: false,
+			error: true
+		})
 	}
 
 	handleRefresh() {
 		this.setState({
 			loading: true
 		});
-		this.props.actions.fetchCount().then(() => this.setState({ loading: false }));
+		this.props.actions.fetchCount().then(() => this.setState({ loading: false })).catch(() => this.handleError);
 	}
 
 	componentDidMount() {
-		this.props.actions.fetchCount().then(
-			() => {
-
-				this.setState({
-					loading: false
-				})
-
-			}
-
-		);
+		this.props.actions.fetchCount().then(() => this.setState({ loading: false })).catch(() => this.handleError);
 		let query = {
 			payload: {},
 			skip: 0,
 			limit: this.props.store.getMaxResultsPerPage()
 		}
-		this.props.actions.fetchByPage(query)
+		this.props.actions.fetchByPage(query);
 	}
 
   render() {
-		var widthStyle = {width: this.props.width} || {width: '0px'};
-		var count = this.props.store.getCount();
+		let widthStyle = {width: this.props.width} || {width: '0px'};
+		let count = this.props.store.getCount();
+		let perPage = this.props.store.getMaxResultsPerPage();
+		let actions = this.props.actions;
+		let isLoading = this.state.loading;
     return (
 			<div className="search-toolbar" style={widthStyle}>
 	      <input className="search-input" type="text" ref="searchText"/>
 	      <i className="fa fa-search fa-lg" onClick={function(){console.log('filtrando')}}></i>
-	      {!this.state.loading?
+	      {!isLoading?
 					<span className="search-results" onClick={this.handleRefresh}>Items Found: {count}</span> :
 	      	<i className="fa fa-spinner fa-lg"></i>
 				}
+				<PaginationComponent isLoading={isLoading} perPage={perPage} count={count} actions={actions}></PaginationComponent>
       </div>
 		)
   }
@@ -221,5 +224,111 @@ class FooterComponent extends React.Component {
 		)
   }
 }
+
+
+class PaginationComponent extends PureComponent {
+
+	static propTypes = {
+		perPage: number.isRequired,
+		count: number,
+		actions: object.isRequired,
+		isLoading: bool.isRequired
+	}
+
+
+
+	static styles = {
+    selectedPage: {
+			backgroundColor: '#565151',
+			color: 'white',
+			padding: '2px',
+			cursor:'pointer',
+			fontWeight:'bold'
+		},
+    unselectedPage: {
+			color:'blue',
+			textDecoration: 'underline',
+			cursor:'pointer'
+		},
+		marker: {
+			color:'blue',
+			cursor:'pointer',
+			fontSize:'15px'
+		}
+  }
+
+	constructor(props){
+		super(props);
+
+		this.state = {
+		  current: 1,
+		  perPage: this.props.perPage,
+		  count: this.props.count,
+		  visible: 5,
+		}
+
+		this.state.pageArray = this.getElementArray()
+	}
+
+	decreasePage(){
+    if(this.state.current ==1) return
+    this.setPage(this.state.current-1);
+  }
+
+  increasePage(){
+    if(this.state.current == this.state.visible) return
+    this.setPage(this.state.current+1);
+  }
+
+  setPage(p) {
+		if(p>0 && p<(this.state.visible+1)){
+      this.setState({
+        current: p,
+        pageArray: this.getElementArray(p)
+      })
+			//Hacer el fetch para la pagina P
+			let query = {
+				payload: {},
+				skip: (p*this.state.perPage) - this.state.perPage +1,
+				limit: this.state.perPage
+			}
+			this.props.actions.fetchByPage(query)
+		}
+	}
+
+	getElementArray(p) {
+		let current = p || this.state.current;
+	  var array = [];
+	  for (let i = 0; i < this.state.visible; i++) {
+	      array[i] = i + current;
+	  }
+	  return array;
+	}
+
+
+
+	render() {
+
+      if(this.state.pageArray.length == 0 || this.props.isLoading) {
+        return (<span></span>)
+      }
+      else {
+				var markerStyle = PaginationComponent.styles.marker;
+				var selectedStyle = PaginationComponent.styles.selectedPage;
+				var unselectedStyle = PaginationComponent.styles.unselectedPage;
+
+        return (
+            <span>
+              {this.state.current ==1? null: <span style={markerStyle} onClick={this.decreasePage}>&laquo;</span>}&nbsp;
+                {this.state.pageArray.map((ele, index) => (
+                  <span onClick={this.setPage.bind(this,ele)} key={"page_"+index}><span style={this.state.currentSelectedPage==ele ?  selectedStyle : unselectedStyle}><span >{ele}</span></span>&nbsp;</span>
+                ))}
+              {this.state.current == this.state.visible ? null: <span style={markerStyle} onClick={this.increasePage}>&raquo;</span>}&nbsp;
+            </span>
+        )
+      }
+  }
+}
+
 
 export default TableController;

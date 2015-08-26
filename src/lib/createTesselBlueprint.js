@@ -84,11 +84,14 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
     		})
     	}
 
-    	fetchCount(payload = {}, resolve) {
+    	fetchCount(payload = {}, resolve, reject) {
     		var resource = new Resource();
     		resource.count(payload, (data) => {
     			getStateRef().set({count: data})
     			resolve(data)
+    		}).catch((e) => {
+          debugger
+    			reject(e)
     		})
     	}
 

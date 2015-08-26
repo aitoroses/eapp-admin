@@ -23,10 +23,7 @@ class ManageHandler extends React.Component {
   }
 
   updateMeasures() {
-
-      console.log("New width of routerComponent: "+this.getMeasures().width);
-      this.setState(this.getMeasures())
-
+    this.setState(this.getMeasures())
   }
 
 	render() {

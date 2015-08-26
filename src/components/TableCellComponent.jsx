@@ -53,7 +53,8 @@ class TableCellComponent extends React.Component {
     this.debouncedChange = debounce(props.onChange, 200)
   }
 
-  static styles = {
+
+  /*static styles = {
     input: {
       border: 'none',
       outline: 'none',
@@ -71,7 +72,7 @@ class TableCellComponent extends React.Component {
       background: 'rgba(0,0,0,0) !important',
       border: 0
     }
-  }
+  }*/
 
   state = {
     validity: true
@@ -109,8 +110,6 @@ class TableCellComponent extends React.Component {
   }
 
   render() {
-    console.log("render cell");
-
     var calculated = {
       isEditing: this.isEditable(),
       value: this._getCellValue(),
