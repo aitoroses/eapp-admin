@@ -135,11 +135,12 @@ class TableComponent extends PureComponent {
 	}
 
 	render() {
+		var tableRowCount = this.props.data.length < this.props.perPage ? this.props.data.length : this.props.perPage;
     return (
       <Table
         maxHeight={540}
         width={this.props.width}
-        rowsCount={this.props.perPage}
+        rowsCount={tableRowCount}
         rowHeight={50}
         headerHeight={40}
         onRowClick={this.handleRowClick}
