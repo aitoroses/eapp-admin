@@ -5,7 +5,7 @@ const PropTypes = React.PropTypes;
 class DualBox extends React.Component {
 
 	changeList = (item, list1, list2) => {
-		if(item && list1.indexOf(item)>-1){
+		if(item){
 			this.props.callback(item, list1, list2);
 			this.setState({targetItem: null});
 		}
@@ -40,7 +40,7 @@ class DualBox extends React.Component {
 					labelField={this.props.labelField}
 					valueField={this.props.valueField}
 					onChange={this.handleChange.bind(this)} />
-				<button className="button blue-color" onClick={() => this.changeList(this.state.targetItem, this.props.right.list, this.props.left.list)}><i className="fa fa-chevron-left"></i></button>
+				<button className="button blue-color" onClick={() => this.changeList(this.state.targetItem, this.props.left.list, this.props.right.list)}><i className="fa fa-chevron-left"></i></button>
 				<button className="button blue-color" onClick={() => this.changeList(this.state.targetItem, this.props.left.list, this.props.right.list)}><i className="fa fa-chevron-right"></i></button>
 				<Box label={this.props.right.title}
 					options={this.props.right.list}
