@@ -90,7 +90,6 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
     			getStateRef().set({count: data})
     			resolve(data)
     		}).catch((e) => {
-          debugger
     			reject(e)
     		})
     	}

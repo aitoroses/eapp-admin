@@ -353,13 +353,10 @@ class CheckBoxCellComponent extends React.Component {
     if(this.props.isEditing){
       var style = {
         padding: '5px',
-        border: 0,
-        width:'100%',
-        height:'50px'
+        border: 0
       }
       holder = (
         <input
-          className="input-editable"
           ref={this.props.columnDef.key+"_"+this.props.row}
           type="checkbox"
           value={this.state.currentValue}

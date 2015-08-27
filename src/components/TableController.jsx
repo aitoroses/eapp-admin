@@ -56,8 +56,23 @@ class GenericTable extends React.Component {
 
   state = {
     selectedRow:null,
-		newRow:null
+		newRow:null,
+		error:false,
+		loading: true
   }
+
+	onError(){
+		this.setState({
+			error:true
+		})
+	}
+
+	onSuccess(){
+		this.setState({
+			error:false,
+			loading:false
+		})
+	}
 
 	onSave(arrayValue, row){
 		let config = this.props.store.getDefinition();
@@ -131,16 +146,18 @@ class GenericTable extends React.Component {
 	}
 
   render() {
-    var columnsDef = this.props.store.getFields();
-    var data = this.getTransformedData() || [];
-		var columnsWidth = this.props.width==0 ? [] : this.calculateColumnsWidth(columnsDef);
-		var width = this.props.width || 0;
-		var perPage = this.props.store.getMaxResultsPerPage();
+    let columnsDef = this.props.store.getFields();
+    let data = this.getTransformedData() || [];
+		let columnsWidth = this.props.width==0 ? [] : this.calculateColumnsWidth(columnsDef);
+		let width = this.props.width || 0;
+		let perPage = this.props.store.getMaxResultsPerPage();
+		let isError = this.state.error;
+		let isLoading = this.state.loading;
     return (
       <div style={{marginLeft:'50px', marginTop:'50px'}} >
-        <FiltersComponent  store={this.props.store} actions={this.props.actions} width={width}></FiltersComponent>
+        <FiltersComponent  onSuccess={this.onSuccess} onError={this.onError} store={this.props.store} actions={this.props.actions} width={width}></FiltersComponent>
         <TableComponent columnsWidth={columnsWidth} width={width} data={data} columnsDef={columnsDef} newRow={this.state.newRow} selectedRow={this.state.selectedRow} onEnterEditMode={this.onEnterEditMode} onExitEditMode={this.onExitEditMode} onCancelAddNewRow={this.onCancelAddNewRow} onSave={this.onSave}></TableComponent>
-				<FooterComponent  perPage={perPage} addRowFunc={this.onAddNewRow} width={width}></FooterComponent>
+				<FooterComponent  isLoading={isLoading} isError={isError} perPage={perPage} addRowFunc={this.onAddNewRow} width={width}></FooterComponent>
       </div>
     )
   }
@@ -152,7 +169,9 @@ class FiltersComponent extends React.Component {
 	static propTypes = {
 		width: number.isRequired,
 		store: object.isRequired,
-		actions: object.isRequired
+		actions: object.isRequired,
+		onError: func,
+		onSuccess: func
 	}
 
 	state = {
@@ -164,24 +183,32 @@ class FiltersComponent extends React.Component {
 		this.setState({
 			loading: false,
 			error: true
-		})
+		});
+		this.props.onError();
 	}
 
 	handleRefresh() {
 		this.setState({
 			loading: true
 		});
-		this.props.actions.fetchCount().then(() => this.setState({ loading: false })).catch(() => this.handleError);
-	}
-
-	componentDidMount() {
-		this.props.actions.fetchCount().then(() => this.setState({ loading: false })).catch(() => this.handleError);
+		this.props.actions.fetchCount().then(() => {this.setState({ loading: false, error: false }), this.props.onSuccess()}).catch(this.handleError);
 		let query = {
 			payload: {},
 			skip: 0,
 			limit: this.props.store.getMaxResultsPerPage()
 		}
-		this.props.actions.fetchByPage(query);
+		this.props.actions.fetchByPage(query).catch(this.handleError);
+	}
+
+	componentDidMount() {
+		this.props.actions.fetchCount().then(() => {this.setState({ loading: false, error: false }); this.props.onSuccess()}).catch(this.handleError);
+
+		let query = {
+			payload: {},
+			skip: 0,
+			limit: this.props.store.getMaxResultsPerPage()
+		}
+		this.props.actions.fetchByPage(query).catch(this.handleError);
 	}
 
   render() {
@@ -196,7 +223,9 @@ class FiltersComponent extends React.Component {
 	      <input className="search-input" type="text" ref="searchText"/>
 	      <i className="fa fa-search fa-lg" onClick={function(){console.log('filtrando')}}></i>
 	      {!isLoading?
-					<span className="search-results" onClick={this.handleRefresh}>Items Found: {count}</span> :
+					<span className="search-results" onClick={this.handleRefresh}>
+						{isError? <span style={{color:'red'}}><i className="fa fa-exclamation-triangle"></i> Error while retrieving information from database</span> : <span>Items Found: {count}</span>}
+					</span> :
 	      	<i className="fa fa-spinner fa-lg"></i>
 				}
 				<PaginationComponent isError={isError} isLoading={isLoading} perPage={perPage} visible={5} count={count} actions={actions}></PaginationComponent>
@@ -210,7 +239,9 @@ class FooterComponent extends React.Component {
 	static propTypes = {
 		width: number.isRequired,
 		addRowFunc: func,
-		perPage: number
+		perPage: number,
+		isError: bool,
+		isLoading: bool
 	}
 
 	handleAddRow(){
@@ -218,8 +249,9 @@ class FooterComponent extends React.Component {
 	}
 
   render() {
-		var widthStyle = {width: this.props.width} || {width: '0px'};
-		var itemsCount = this.props.perPage || '...';
+		let widthStyle = {width: this.props.width} || {width: '0px'};
+		let itemsCount = this.props.perPage || '...';
+		this.props.isError || this.props.isLoading ? widthStyle.display='none' : widthStyle.display='block';
     return (
 			<div className="footer-toolbar" style={widthStyle}>
 				<div style={{float:'left'}}>Items per Page: {itemsCount}</div>

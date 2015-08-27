@@ -35,7 +35,7 @@ export function getCurrentPage(state) {
 
 export function shownElements(state) {
   ensureInterface(state)
-  return (state.current + 1) * state.perPage;
+  return (state.current) * state.perPage;
 }
 
 export function remainingElements(state) {
@@ -50,7 +50,7 @@ export function hasLessPages(state) {
 
 export function hasMorePages(state) {
   ensureInterface(state)
-  return (state.count - shownElements(state)) >= 0;
+  return (state.count - shownElements(state)) > 0;
 }
 
 export function getNumberOfPages(state) {
@@ -86,6 +86,9 @@ export function getShowingPages(state) {
 
   var result =  _.range(0, state.visible).reduce(pageReducer, []);
 
+  let num = getNumberOfPages(state),
+      last, maxVal;
+
   if (getNumberOfPages(state) < result.length) {
 
     // prune the array
@@ -106,26 +109,28 @@ export function getShowingPages(state) {
       }
     }
     prune(result);
+
+    // Prevent top displacement
+    maxVal = 0;
+
   } else {
 
-    // Down edge
-    var minVal = result[0] <= 0 ?  Math.abs(result[0]) + 1 : 0;
-
     // Top edge
-    var num = getNumberOfPages(state);
-    var last =  result[result.length - 1];
-    var maxVal = last > num ? last - num : 0;
-
-    result = result.map(function(x) {return x + minVal - maxVal })
+    last =  result[result.length - 1];
+    maxVal = last > num ? last - num : 0;
 
   }
+
+  // Down edge
+  var minVal = result[0] <= 0 ?  Math.abs(result[0]) + 1 : 0;
+
+  result = result.map(function(x) {return x + minVal - maxVal })
 
   return result;
 }
 
 export function getElementArray(state) {
   ensureInterface(state)
-
   if(state.count==0) return [];
 
   let array = getShowingPages(state);
