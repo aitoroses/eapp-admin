@@ -155,12 +155,32 @@ class GenericTable extends React.Component {
 		let isLoading = this.state.loading;
     return (
       <div style={{marginLeft:'50px', marginTop:'50px'}} >
-        <FiltersComponent  onSuccess={this.onSuccess} onError={this.onError} store={this.props.store} actions={this.props.actions} width={width}></FiltersComponent>
-        <TableComponent columnsWidth={columnsWidth} width={width} data={data} columnsDef={columnsDef} newRow={this.state.newRow} selectedRow={this.state.selectedRow} onEnterEditMode={this.onEnterEditMode} onExitEditMode={this.onExitEditMode} onCancelAddNewRow={this.onCancelAddNewRow} onSave={this.onSave}></TableComponent>
-				<FooterComponent  isLoading={isLoading} isError={isError} perPage={perPage} addRowFunc={this.onAddNewRow} width={width}></FooterComponent>
+        <FiltersComponent
+					onSuccess={this.onSuccess}
+					onError={this.onError}
+					store={this.props.store}
+					actions={this.props.actions}
+					width={width} />
+        <TableComponent
+					columnsWidth={columnsWidth}
+					width={width}
+					data={data}
+					columnsDef={columnsDef}
+					newRow={this.state.newRow}
+					selectedRow={this.state.selectedRow}
+					onEnterEditMode={this.onEnterEditMode}
+					onExitEditMode={this.onExitEditMode}
+					onCancelAddNewRow={this.onCancelAddNewRow}
+					onSave={this.onSave} />
+				<FooterComponent
+					isLoading={isLoading}
+					isError={isError}
+					perPage={perPage}
+					addRowFunc={this.onAddNewRow}
+					width={width} />
       </div>
     )
-  }
+	}
 
 }
 
@@ -187,28 +207,34 @@ class FiltersComponent extends React.Component {
 		this.props.onError();
 	}
 
-	handleRefresh() {
-		this.setState({
-			loading: true
-		});
-		this.props.actions.fetchCount().then(() => {this.setState({ loading: false, error: false }), this.props.onSuccess()}).catch(this.handleError);
+	fetchItems() {
 		let query = {
 			payload: {},
 			skip: 0,
 			limit: this.props.store.getMaxResultsPerPage()
 		}
-		this.props.actions.fetchByPage(query).catch(this.handleError);
+		return this.props.actions.fetchByPage(query);
+	}
+
+	fetchCount() {
+		return this.props.actions.fetchCount()
+	}
+
+	fetchCountAndItems() {
+		this.setState({ loading: true, error: false })
+		return this.fetchCount()
+			.then(this.fetchItems.bind(this))
+			.then(this.props.onSuccess)
+			.then(() => this.setState({ loading: false }))
+			.catch(this.handleError)
+	}
+
+	handleRefresh() {
+		this.fetchCountAndItems()
 	}
 
 	componentDidMount() {
-		this.props.actions.fetchCount().then(() => {this.setState({ loading: false, error: false }); this.props.onSuccess()}).catch(this.handleError);
-
-		let query = {
-			payload: {},
-			skip: 0,
-			limit: this.props.store.getMaxResultsPerPage()
-		}
-		this.props.actions.fetchByPage(query).catch(this.handleError);
+		this.fetchCountAndItems()
 	}
 
   render() {

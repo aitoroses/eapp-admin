@@ -2,6 +2,12 @@ var Nocker = require('nocker');
 
 var itemsCollection = require('./mock-db/items')
 
+function delay(res, result, amount) {
+  setTimeout(function() {
+    res.json(result)
+  }, amount)
+}
+
 Nocker.register([
   {
     method: 'POST',
