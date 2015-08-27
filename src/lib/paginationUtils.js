@@ -35,7 +35,8 @@ export function getCurrentPage(state) {
 
 export function shownElements(state) {
   ensureInterface(state)
-  return (state.current) * state.perPage;
+  let shouldBe = state.current * state.perPage;
+  return state.count < shouldBe ? state.count : shouldBe;
 }
 
 export function remainingElements(state) {
