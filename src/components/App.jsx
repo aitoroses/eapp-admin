@@ -6,7 +6,7 @@ import App from './AppHandler';
 import Playground from './Playground';
 import ManageHandler from './ManageHandler';
 // Routes
-var routes = (
+var routes =
 
   <Route handler={App}>
 
@@ -24,7 +24,6 @@ var routes = (
 
     <NotFoundRoute handler={NotFound}/>
   </Route>
-);
 
 Router.run(routes, function (Handler) {
   React.render(<Handler/>, document.getElementById('app'));

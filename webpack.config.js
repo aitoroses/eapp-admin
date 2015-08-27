@@ -45,6 +45,9 @@ module.exports = {
   ],
 
   module: {
+    // preLoaders: [
+    //   { test: /\.(js|jsx)$/, loaders: ['eslint'], exclude: /node_modules/ }
+    // ],
     loaders: [
       { test: /\.(js|jsx)$/, loaders: ['react-hot', 'babel?stage=0'], exclude: /node_modules/ },
       { test: /node_modules.*\.css$/, loaders: ['style', 'css'], exclude: /node_modules/ },
