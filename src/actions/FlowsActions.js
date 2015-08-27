@@ -59,11 +59,73 @@ class FlowsActions {
 		resolve(updated);
 	}
 
+	setListForFlowFields(payload, resolve) {
+		let [list1, list2] = payload;
+
+		var myBranch = FlowsStore.getFlowFields();
+
+		// Temporal solution, it should work with trasanctions.
+		// Update masterFields list
+		var masterFields = list1.map(function(item){
+			return {
+				field: item,
+				category: null
+			}
+		});
+
+		var updated = myBranch.set({masterFields});
+
+		var flowfields = list2.map(function(item){
+			var flowfields = FlowsStore.getFlowFields();
+			var index = flowfields.flowfields.map(function(elem){return elem.field.fieldId}).indexOf(item.fieldId);
+			var x = null;
+			if(index != -1) x = flowfields.flowfields[index];
+			var category = null;
+			if(x) category = x.category;
+			//debugger;
+			return {
+				field: item,
+				category: category
+			}
+		})
+
+		var updated = updated.set({flowfields});
+
+
+
+
+
+		/*var datos2 = masterFields.masterFields.map(function(a){
+			var datos = list1.map(function(b){
+				if(b.fieldId==a.field.fieldId){
+					return a;
+				}
+			})
+			var filter = datos.filter(function(n){ return n!=undefined });
+			return filter[0];
+		})
+		datos2 = datos2.filter(function(n){ return n!=undefined })*/
+
+		//var updated = myBranch.set({"masterFields":datos2});
+
+		// Update flowfields list
+		/*var flowfields = updated.flowfields.toJS();
+		flowfields = list2;
+		var updated = updated.set({flowfields});*/
+
+		/*var trans = flowfields.transact();
+
+		trans.masterFields.list = list1;
+		trans.flowfields.list = list2;
+
+		var updated = flowfields.run();*/
+		resolve(updated);
+	}
+
 	setCategory({row, value}, resolve) {
-		var flowFields = FlowsStore.getFlowFields();
-		var categories = flowFields.categories;
-		categories = categories.splice(row, 1, value);
-		var updated = flowFields.set({categories});
+		var flowFields = FlowsStore.getFlowFields().flowfields;
+		var field = flowFields[row];
+		var updated = field.set({"category":value});
 		resolve(updated);
 	}
 

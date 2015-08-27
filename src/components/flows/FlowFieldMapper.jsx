@@ -1,3 +1,4 @@
+import {actions as FlowActions} from 'actions/FlowsActions';
 import ExtendedDualBox from 'components/ExtendedDualBox';
 
 const PropTypes = React.PropTypes;
@@ -12,32 +13,52 @@ class FlowFieldMapper extends React.Component {
 
 	constructor(props) {
 		super(props);
+		FlowActions.queryMasterFields();
 	}
 
-	handleChange(item, key, list1, list2, dir) {
-		var obj = list1.filter(function(i){if(i[key]==item){return i}});
-		var pos = list1.map(function(a){return a[key];}).indexOf(parseInt(item));
-		list1.splice(pos,1);
-		list2.push(obj[0]);
-		debugger;
-		FlowActions.setListForFlowTas({list1, list2, dir});
+	handleChange(item, list1, list2) {
+		var swapped = false;
+
+		let index = list1.indexOf(item);
+
+		// Swap lists
+		if(index==-1){
+			index = list2.indexOf(item);
+			let aux = list1;
+			list1 = list2;
+			list2 = aux;
+			swapped = true;
+		}
+
+		let l1 = [
+			...list1.slice(0, index),
+			...list1.slice(index+1, list1.length)
+		];
+		let l2 = [...list2, list1[index]];
+
+		// Return list to initial state before being swapped
+		if(swapped) {
+			let aux = l1;
+			l1 = l2;
+			l2 = aux;
+		}
+
+		FlowActions.setListForFlowFields([l1, l2]);
 	}
 
 	render() {
 
 		var left = {
-			title: "A",
 			list: store.getMasterFields()
 		}
 
 		var right = {
-			title: 'B',
-			list: store.getFlowFields().flowfields
+			list: store.getFlowFieldsAssign()
 		}
 
 		return (
-			<ExtendedDualBox left={left}
-			right={right}
+			<ExtendedDualBox left={left.list}
+			right={right.list}
 			labelField="fieldDisplayName"
 			valueField="fieldId"
 			callback={this.handleChange}/>
