@@ -14,7 +14,9 @@ class TableComponent extends PureComponent {
 		newRow: React.PropTypes.number,
 		width: React.PropTypes.number.isRequired,
 		columnsWidth: React.PropTypes.array.isRequired,
-		onSave: React.PropTypes.func
+		onSave: React.PropTypes.func.isRequired,
+		onCreate: React.PropTypes.func.isRequired,
+		perPage: React.PropTypes.number.isRequired
 	}
 
 	componentWillReceiveProps(nextProps) {
@@ -55,7 +57,7 @@ class TableComponent extends PureComponent {
 	      })
 			} else {
 				return React.addons.createFragment({
-	        cellData: <div><span onClick={this.handleSave.bind(this)} className="fa fa-floppy-o fa-2x"></span><span onClick={()=>this.onCancelAddNewRow()} className="fa fa-trash fa-2x"></span></div>
+	        cellData: <div><span onClick={this.handleCreate.bind(this)} className="fa fa-floppy-o fa-2x"></span><span onClick={()=>this.onCancelAddNewRow()} className="fa fa-trash fa-2x"></span></div>
 	      })
 			}
 
@@ -69,6 +71,10 @@ class TableComponent extends PureComponent {
 
 	handleSave() {
 		this.props.onSave(this.state.safeObject, this.props.selectedRow);
+	}
+
+	handleCreate() {
+		this.props.onCreate(this.state.safeObject, this.props.selectedRow);
 	}
 
 	onCancelAddNewRow(event, index, task) {
@@ -133,7 +139,7 @@ class TableComponent extends PureComponent {
       <Table
         maxHeight={540}
         width={this.props.width}
-        rowsCount={this.props.data.length}
+        rowsCount={this.props.perPage}
         rowHeight={50}
         headerHeight={40}
         onRowClick={this.handleRowClick}
