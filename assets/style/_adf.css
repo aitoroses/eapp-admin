@@ -1,0 +1,74 @@
+:root {
+  --fontStack: Tahoma, Verdana, Helvetica, sans-serif;
+  --fontDefaultSize: 11px;
+  --primaryColor: #4f4f4f;
+  --headerFontColor: #003d5b;
+  --headerFontSize: 12px;
+  --titleFontSize: 14px;
+}
+
+/*$font-stack: Tahoma, Verdana, Helvetica, sans-serif;
+$font-default-size: 11px;
+$primary-color: #4f4f4f;
+
+$header-font-color: #003d5b;
+$header-font-size: 12px;
+
+$title-font-size: 14px;*/
+
+body, .form-control {
+  font-family: var(--fontStack);
+  font-size: var(--fontDefaultSize);
+  color: var(--primaryColor);
+}
+
+/*.adf {*/
+h1 {
+  font-family: var(--fontStack);
+  font-size: var(--fontDefaultSize);
+  font-weight: bold;
+  color: white;
+  padding: 10px;
+  margin: 5px 0px;
+}
+
+h2 {
+  font-family: var(--fontStack);
+  color: var(--headerFontColor);
+  font-size: var(--headerFontSize);
+  font-weight: bold;
+  margin: 0;
+}
+
+h3 {
+  font-family: var(--fontStack);
+  color: var(--headerFontColor);
+  font-size: var(--fontDefaultSize) !important;
+  font-weight: bold;
+  margin: 0;
+}
+
+.btn-adf {
+  font-size: var(--fontDefaultSize);
+  font-weight: normal;
+  background-image: linear-gradient(center top, #cce2f6 0%, #b1d2f2 100%);
+  border-radius: 3px;
+  border: 1px solid #95b6d4;
+  border-bottom-color: #92b3d1;
+  margin: 0 1px;
+  line-height: 1em;
+}
+
+.btn-adf:hover {
+  border: 1px solid #e2cb9b;
+  border-bottom-color: #d4bb87;
+  background-image: linear-gradient(top, #ffe4a8 0%, #ffd475 100%);
+}
+
+.btn-adf:active {
+  border: 1px solid #789fc4;
+  border-top-color: #648baf;
+  background-image: linear-gradient(top, #6aa1d5 0%, #accae6 100%);
+}
+
+/* end ADF styles */

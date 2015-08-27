@@ -1,5 +1,5 @@
-@import "adf";
-@import "custom";
+@import "./_adf.css";
+@import "./_custom.css";
 
 .grey{
     color: #aaa;

@@ -275,7 +275,7 @@
 	//width:100px;
 	background-color: white;
 	background-position: center center;
-	background-image: url('../../images/logo-bpm.jpg');
+	background-image: url('../images/logo-bpm.jpg');
 	background-repeat: no-repeat;
 	//margin: 15px auto 20px auto;
 }
@@ -284,7 +284,7 @@
 	height:20px;
 	background-color: white;
 	background-position: center center;
-	background-image: url('../../images/icon-firststep.jpg');
+	background-image: url('../images/icon-firststep.jpg');
 	background-repeat: no-repeat;
 	//margin: 15px auto 20px auto;
 }
