@@ -26,6 +26,19 @@ Nocker.register([
         this.res.json(items.length)
       }.bind(this));
     }
+  },
+  {
+    method: 'PUT',
+    path: '/eappservices/flowstepitem/confitem/update',
+    reply(params, query, body) {
+      itemsCollection.update({itemId: body.itemId}, body, function(err, item) {
+        if (err) {
+          this.res.json(false)
+        } else {
+          this.res.json(true)
+        }
+      }.bind(this));
+    }
   }
 ])
 
