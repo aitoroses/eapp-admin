@@ -63,18 +63,28 @@ class GenericTable extends React.Component {
 
 	onError(){
 		this.setState({
-			error:true
+			error:true,
+			loading:false
 		})
 	}
 
-	onSuccess(){
+	onSuccess() {
 		this.setState({
 			error:false,
 			loading:false
 		})
 	}
 
-	onSave(arrayValue, row){
+	onErrorUpdate() {
+		swal('','Error while updating the database');
+	}
+
+	onCreateUpdateSuccess() {
+		this.removeSelectedRowStyles();
+		this.onExitEditMode();
+	}
+
+	onCreate(arrayValue, row) {
 		let config = this.props.store.getDefinition();
 		let newObject = toObject.call(config, arrayValue);
 		let action = {
@@ -82,7 +92,22 @@ class GenericTable extends React.Component {
 			index:row,
 			payload: newObject
 		}
-		this.props.actions.update(action);
+		this.props.actions.create(action)
+			.then(this.onCreateUpdateSuccess)
+			.catch(this.onErrorUpdate);
+	}
+
+	onSave(arrayValue, row) {
+		let config = this.props.store.getDefinition();
+		let newObject = toObject.call(config, arrayValue);
+		let action = {
+			onServer: true,
+			index:row,
+			payload: newObject
+		}
+		this.props.actions.update(action)
+			.then(this.onCreateUpdateSuccess)
+			.catch(this.onErrorUpdate);
 	}
 
 	onAddNewRow(){
@@ -121,7 +146,8 @@ class GenericTable extends React.Component {
 
 	onExitEditMode() {
     this.setState({
-      selectedRow: null
+      selectedRow: null,
+			newRow: null
     });
   }
 
@@ -139,10 +165,48 @@ class GenericTable extends React.Component {
     var lastPercentage = (lastCol/this.props.width)*100;
     var columnArray =[];
     for(var i=0;i<columnCount;i++) {
-      if(i==(columnCount-1)) columnArray.push({size: lastCol, percentage: lastPercentage})
-      else columnArray.push({size: singleColumn, percentage: singlePercentage});
+      if(i==(columnCount-1)) {
+				columnArray.push({size: lastCol, percentage: lastPercentage})
+			} else {
+				columnArray.push({size: singleColumn, percentage: singlePercentage});
+			}
   	}
 		return columnArray;
+	}
+
+	removeSelectedRowStyles(){
+		var el = document.querySelectorAll(".row-selected")[0];
+		if (el) {
+			el.classList.remove("row-selected");
+		}
+		el = document.querySelectorAll(".new-row-selected")[0];
+		if (el) {
+			el.classList.remove("new-row-selected");
+		}
+	}
+
+	fetchItemsByPage(skip) {
+		if (skip!=0) {
+			this.state.newRow!= null ? this.onCancelAddNewRow() : this.onExitEditMode();
+			this.removeSelectedRowStyles();
+		}
+		let query = {
+			payload: {},
+			skip: skip,
+			limit: this.props.store.getMaxResultsPerPage()
+		}
+		return this.props.actions.fetchByPage(query);
+	}
+
+	fetchCount() {
+		return this.props.actions.fetchCount()
+	}
+
+	fetchCountAndItems(skip) {
+		return this.fetchCount()
+			.then(this.fetchItemsByPage.bind(this, skip))
+			.then(this.onSuccess.bind(this))
+			.catch(this.onError.bind(this))
 	}
 
   render() {
@@ -153,14 +217,17 @@ class GenericTable extends React.Component {
 		let perPage = this.props.store.getMaxResultsPerPage();
 		let isError = this.state.error;
 		let isLoading = this.state.loading;
+		let fetchCountAndItems = this.fetchCountAndItems;
     return (
       <div style={{marginLeft:'50px', marginTop:'50px'}} >
         <FiltersComponent
-					onSuccess={this.onSuccess}
-					onError={this.onError}
 					store={this.props.store}
 					actions={this.props.actions}
-					width={width} />
+					width={width}
+					loading={isLoading}
+					error={isError}
+					fetchItemsByPage={this.fetchItemsByPage}
+					fetchCountAndItems={this.fetchCountAndItems}/>
         <TableComponent
 					columnsWidth={columnsWidth}
 					width={width}
@@ -171,7 +238,9 @@ class GenericTable extends React.Component {
 					onEnterEditMode={this.onEnterEditMode}
 					onExitEditMode={this.onExitEditMode}
 					onCancelAddNewRow={this.onCancelAddNewRow}
-					onSave={this.onSave} />
+					onSave={this.onSave}
+					onCreate={this.onCreate}
+					perPage={perPage}/>
 				<FooterComponent
 					isLoading={isLoading}
 					isError={isError}
@@ -189,72 +258,38 @@ class FiltersComponent extends React.Component {
 	static propTypes = {
 		width: number.isRequired,
 		store: object.isRequired,
-		actions: object.isRequired,
-		onError: func,
-		onSuccess: func
-	}
-
-	state = {
-		loading: true,
-		error: false
-	}
-
-	handleError(e) {
-		this.setState({
-			loading: false,
-			error: true
-		});
-		this.props.onError();
-	}
-
-	fetchItems() {
-		let query = {
-			payload: {},
-			skip: 0,
-			limit: this.props.store.getMaxResultsPerPage()
-		}
-		return this.props.actions.fetchByPage(query);
-	}
-
-	fetchCount() {
-		return this.props.actions.fetchCount()
-	}
-
-	fetchCountAndItems() {
-		this.setState({ loading: true, error: false })
-		return this.fetchCount()
-			.then(this.fetchItems.bind(this))
-			.then(this.props.onSuccess)
-			.then(() => this.setState({ loading: false }))
-			.catch(this.handleError)
+		fetchItemsByPage: func,
+		fetchCountAndItems: func,
+		loading: bool,
+		error:bool
 	}
 
 	handleRefresh() {
-		this.fetchCountAndItems()
+		this.props.fetchCountAndItems(0)
 	}
 
 	componentDidMount() {
-		this.fetchCountAndItems()
+		this.props.fetchCountAndItems(0)
 	}
 
   render() {
 		let widthStyle = {width: this.props.width} || {width: '0px'};
 		let count = this.props.store.getCount() || 0;
 		let perPage = this.props.store.getMaxResultsPerPage();
-		let actions = this.props.actions;
-		let isLoading = this.state.loading;
-		let isError = this.state.error;
+		let isLoading = this.props.loading;
+		let isError = this.props.error;
+		let fetchItemsByPage = this.props.fetchItemsByPage;
     return (
 			<div className="search-toolbar" style={widthStyle}>
 	      <input className="search-input" type="text" ref="searchText"/>
 	      <i className="fa fa-search fa-lg" onClick={function(){console.log('filtrando')}}></i>
 	      {!isLoading?
 					<span className="search-results" onClick={this.handleRefresh}>
-						{isError? <span style={{color:'red'}}><i className="fa fa-exclamation-triangle"></i> Error while retrieving information from database</span> : <span>Items Found: {count}</span>}
+						{isError? <span style={{color:'red'}}><i style={{fontSize: '12px', lineHeight: '14px'}} className="fa fa-exclamation-triangle"></i> Error while retrieving information from database</span> : <span>Items Found: {count}</span>}
 					</span> :
 	      	<i className="fa fa-spinner fa-lg"></i>
 				}
-				<PaginationComponent isError={isError} isLoading={isLoading} perPage={perPage} visible={5} count={count} actions={actions}></PaginationComponent>
+				<PaginationComponent isError={isError} isLoading={isLoading} perPage={perPage} visible={5} count={count} fetchItemsByPage={fetchItemsByPage}></PaginationComponent>
       </div>
 		)
   }
@@ -293,7 +328,7 @@ class PaginationComponent extends PureComponent {
 	static propTypes = {
 		perPage: number.isRequired,
 		count: number,
-		actions: object.isRequired,
+		fetchItemsByPage: func,
 		isLoading: bool.isRequired,
 		isError: bool.isRequired
 	}
@@ -335,12 +370,9 @@ class PaginationComponent extends PureComponent {
         current: page
       })
 			//Hacer el fetch para la pagina P
-			let query = {
-				payload: {},
-				skip: (page*this.props.perPage) - this.props.perPage,
-				limit: this.props.perPage
-			}
-			this.props.actions.fetchByPage(query).then(() => {
+			let skip = (page*this.props.perPage) - this.props.perPage;
+
+			this.props.fetchItemsByPage(skip).then(() => {
 				this.setState({
 					pageArray: this.getElementArray()
 				})

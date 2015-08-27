@@ -32,37 +32,31 @@ class Resource {
       })
   }
 
-	create(obj, callback) {
+	create(obj, callback, reject) {
 		return request.post(__config.server + `/${this._resource}/insert`)
 		.send(obj)
 		.then(({body}) => {
 			callback(body);
 		})
-		.catch(e => {
-			console.log("Error Insertando");
-		})
+		.catch(reject)
 	}
 
-	delete(obj, callback) {
+	delete(obj, callback, reject) {
 		return request.put(__config.server + `/${this._resource}/delete`)
 		.send(obj)
 		.then(({body}) => {
 			callback(body);
 		})
-		.catch(e => {
-			console.log("Error Eliminando");
-		})
+		.catch(reject)
 	}
 
-	update(obj, callback) {
+	update(obj, callback, reject) {
 		return request.put(__config.server + `/${this._resource}/update`)
 		.send(obj)
 		.then(({body}) => {
 			callback(body);
 		})
-		.catch(e => {
-			console.log("Error Updateando");
-		})
+		.catch(reject)
 	}
 
 }

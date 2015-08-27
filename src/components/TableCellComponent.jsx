@@ -352,18 +352,23 @@ class CheckBoxCellComponent extends React.Component {
     var holder;
     if(this.props.isEditing){
       var style = {
-        padding: '5px',
-        border: 0
+        width: '98%',
+        backgroundColor: 'white',
+        height: '45px',
+        paddingTop: '15px',
+        border: '0 !important'
       }
+
       holder = (
-        <input
-          ref={this.props.columnDef.key+"_"+this.props.row}
-          type="checkbox"
-          value={this.state.currentValue}
-          onChange={this.handleChange}
-          onBlur={this.handleOnBlur}
-          style={style}
-        />
+        <div>
+          <input
+            ref={this.props.columnDef.key+"_"+this.props.row}
+            type="checkbox"
+            value={this.state.currentValue}
+            onChange={this.handleChange}
+            onBlur={this.handleOnBlur}
+          />
+        </div>
       )
     } else {
       var style = {

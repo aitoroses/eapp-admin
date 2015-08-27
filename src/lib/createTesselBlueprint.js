@@ -94,36 +94,40 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
         })
       }
 
-      create(payload, resolve, reject){
-        var resource = new Resource();
-        resource.create(payload, resolve).then(() => {
-          // resolve(payload)
-        }).catch((e) => {
-          reject(e)
-        })
-      }
+    	create(action, resolve, reject){
+        let {onServer, index, payload} = action;
+        getStateRef()[dataHolderKey].set({[index]: payload});
+    		var resource = new Resource();
+    		resource.create(payload, resolve).then(() => {
+    			resolve(payload)
+    		}).catch((e) => {
+    			reject(e)
+    		})
+    	}
 
-      delete(payload, resolve, reject){
-        var resource = new Resource();
-        resource.delete(payload, resolve).then(() => {
-          // resolve(payload)
-        }).catch((e) => {
-          reject(e)
-        })
-      }
+    	delete(payload, resolve, reject){
+    		var resource = new Resource();
+    		resource.delete(payload, resolve).then(() => {
+    			resolve(payload)
+    		}).catch((e) => {
+    			reject(e)
+    		})
+    	}
 
       update(action, resolve, reject){
         let {onServer, index, payload} = action;
+        let safeRef = getStateRef()[dataHolderKey][index]
         getStateRef()[dataHolderKey].set({[index]: payload});
         if (onServer) {
           var resource = new Resource();
-          resource.update(payload, resolve).then(() => {
-            // resolve(payload)
-          }).catch((e) => {
-            reject(e)
-          })
-        }
-      }
+      		resource.update(payload, resolve).then(() => {
+      			resolve(payload)
+      		}).catch((e) => {
+            getStateRef()[dataHolderKey].set({[index]: safeRef});
+      			reject(e)
+      		})
+      	}
+    	}
 
       executeValidation() {
 
