@@ -1,33 +1,18 @@
 import atom from 'lib/state';
 import TableController from './TableController';
+import DomSize from './DomSize';
 
 class ManageHandler extends React.Component {
-
-	state = {
-    width:0
-  }
-
-	getMeasures() {
-    return {
-      width: Math.floor($( "#routerComponent" ).width()*0.8)
-    }
-  }
-
-  componentDidMount() {
-    window.addEventListener('resize', this.updateMeasures);
-		this.setState(this.getMeasures());
-  }
-
-  componentDidUnmount() {
-    window.removeEventListener('resize', this.updateMeasures);
-  }
-
-  updateMeasures() {
-    this.setState(this.getMeasures())
-  }
-
 	render() {
-		return <TableController width={this.state.width} table={this.props.params.table}></TableController>
+		return (
+			<DomSize>
+				{({width}) =>
+					<TableController
+						width={width - 100 /* because of CSS margins */}
+						table={this.props.params.table} />
+				}
+			</DomSize>
+		)
 	}
 }
 
