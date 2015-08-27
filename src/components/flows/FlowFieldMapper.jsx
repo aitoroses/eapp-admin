@@ -49,18 +49,16 @@ class FlowFieldMapper extends React.Component {
 	render() {
 
 		var left = {
-			title: "A",
 			list: store.getMasterFields()
 		}
 
 		var right = {
-			title: 'B',
 			list: store.getFlowFieldsAssign()
 		}
 
 		return (
-			<ExtendedDualBox left={left}
-			right={right}
+			<ExtendedDualBox left={left.list}
+			right={right.list}
 			labelField="fieldDisplayName"
 			valueField="fieldId"
 			callback={this.handleChange}/>

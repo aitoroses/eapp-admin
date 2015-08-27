@@ -92,10 +92,10 @@ class FlowsStore {
 	}
 
 	getFlowFieldsAssign() {
-		//return this.state.createFlow.flowfields.flowfields;
-		return this.state.createFlow.flowfields.flowfields.map(function(element){
+		return this.state.createFlow.flowfields.flowfields;
+		/*return this.state.createFlow.flowfields.flowfields.map(function(element){
 			return element.field;
-		});
+		});*/
 	}
 
 	getFields() {
