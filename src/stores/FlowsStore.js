@@ -69,13 +69,8 @@ class FlowsStore {
 					}
 				},
 				flowfields: {
-					get masterFields() {
-						return FieldsStore.getAll() || [];
-					},
-					get flowfields(){
-						return [];
-					},
-					categories: []
+						masterFields: [],
+						flowfields: []
 				},
 				flowtas: {
 					masterTas: {
@@ -92,6 +87,13 @@ class FlowsStore {
 
 	getMasterFields() {
 		return this.state.createFlow.flowfields.masterFields.map(function(element){
+			return element.field;
+		});
+	}
+
+	getFlowFieldsAssign() {
+		//return this.state.createFlow.flowfields.flowfields;
+		return this.state.createFlow.flowfields.flowfields.map(function(element){
 			return element.field;
 		});
 	}
@@ -130,4 +132,4 @@ export var store = state.createStore(FlowsStore);
 
 window.store = store;
 
-store.on("update", function(state){console.log(store.getStateDescriptor().state);})
+//store.on("update", function(state){console.log(store.getStateDescriptor().state);})

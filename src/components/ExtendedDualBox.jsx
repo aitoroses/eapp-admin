@@ -16,6 +16,8 @@ class ExtendedDualBox extends DualBox {
 
 	renderSelectBox() {
 
+		//debugger;
+
 		if(this.props.right.list.length==0) return
 
 		let handleChangeCategory = this.handleChangeCategory.bind(this);
