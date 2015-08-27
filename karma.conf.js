@@ -10,7 +10,7 @@ module.exports = function (config) {
 
     singleRun: process.env.CONTINUOUS_INTEGRATION === 'true',
 
-    frameworks: [ 'mocha' ],
+    frameworks: [ 'mocha', 'sinon-chai' ],
 
     files: [
       'tests.webpack.js'
@@ -20,13 +20,14 @@ module.exports = function (config) {
       'tests.webpack.js': [ 'webpack', 'sourcemap' ]
     },
 
-    reporters: [ 'dots' ],
+    reporters: [ 'dots', 'mocha' ],
 
     webpack: {
       devtool: '#inline-source-map',
       module: {
         loaders: [
-          { test: /\.(js|jsx)$/, loader: 'babel-loader?stage=0', exclude: /node_modules/ }
+          { test: /\.(js|jsx)$/, loader: 'babel-loader?stage=0', exclude: /node_modules/ },
+          { test: /\.coffee$/, loader: "coffee", exclude: /node_modules/},
         ]
       },
       plugins: [
