@@ -21,7 +21,7 @@ function getRest(collection, pathname, key) {
       result = result.filter(function(item) {
         var anyMatch = searchKeys
           .map(function(k) {
-            return (new RegExp(record[k])).test(item[k])
+            return (new RegExp(record[k], 'i')).test(item[k])
           })
           .filter(function(c) {
             return c == true
