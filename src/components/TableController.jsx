@@ -359,8 +359,14 @@ class PaginationComponent extends PureComponent {
   componentWillReceiveProps(nextProps) {
     if (nextProps.count != this.props.count) {
       this.setState({
-      pageArray: this.getElementArray(nextProps)
-    })
+        pageArray: this.getElementArray(nextProps)
+      })
+    }
+
+    if (nextProps.isLoading != this.props.isLoading) {
+      this.setState({
+        current: 1
+      })
     }
   }
 
