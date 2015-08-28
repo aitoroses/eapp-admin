@@ -15,13 +15,13 @@ class DomSize extends React.Component {
   }
 
   componentDidMount() {
-		this.$node = $(React.findDOMNode(this));
-    window.addEventListener('resize', this.updateMeasures);
-		this.setState(this.getMeasures());
+    this.$node = $(React.findDOMNode(this))
+    window.addEventListener('resize', this.updateMeasures)
+    this.setState(this.getMeasures())
   }
 
   componentDidUnmount() {
-    window.removeEventListener('resize', this.updateMeasures);
+    window.removeEventListener('resize', this.updateMeasures)
   }
 
   updateMeasures() {
@@ -29,13 +29,13 @@ class DomSize extends React.Component {
   }
 
 	render() {
-		var c = this.props.children;
-		if (c.length && c.length == 1 ) {
-			return c(this.state)
-		} else {
-			console.warn("DomSize node has more or less than 1 child.")
-			return <span />
-		}
+  var c = this.props.children
+  if (c.length && c.length == 1) {
+    return c(this.state)
+  } else {
+    console.warn('DomSize node has more or less than 1 child.')
+    return <span />
+  }
 	}
 }
 
