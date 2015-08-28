@@ -363,21 +363,19 @@ class PaginationComponent extends PureComponent {
 			p.target.innerText == "<" ? (this.state.current -1):
 		  p.target.innerText == ">" ? (this.state.current +1): parseInt(p.target.innerText)
 		)
-		if(page>0 && page<(this.props.visible+1)){
-			let auxState = {...this.state};
-			auxState.current = page;
-      this.setState({
-        current: page
-      })
-			//Hacer el fetch para la pagina P
-			let skip = (page*this.props.perPage) - this.props.perPage;
+		let auxState = {...this.state};
+		auxState.current = page;
+    this.setState({
+      current: page
+    })
+		//Hacer el fetch para la pagina P
+		let skip = (page*this.props.perPage) - this.props.perPage;
 
-			this.props.fetchItemsByPage(skip).then(() => {
-				this.setState({
-					pageArray: this.getElementArray()
-				})
+		this.props.fetchItemsByPage(skip).then(() => {
+			this.setState({
+				pageArray: this.getElementArray()
 			})
-		}
+		})
 	}
 
 	render() {

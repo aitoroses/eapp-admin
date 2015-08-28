@@ -360,7 +360,7 @@ class CheckBoxCellComponent extends React.Component {
       }
 
       holder = (
-        <div>
+        <div style={style}>
           <input
             ref={this.props.columnDef.key+"_"+this.props.row}
             type="checkbox"

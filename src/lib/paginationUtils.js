@@ -51,7 +51,8 @@ export function hasLessPages(state) {
 
 export function hasMorePages(state) {
   ensureInterface(state)
-  return (state.count - shownElements(state)) > 0;
+  // return (state.count - shownElements(state)) > 0;
+  return state.current < getNumberOfPages(state);
 }
 
 export function getNumberOfPages(state) {
@@ -130,11 +131,26 @@ export function getShowingPages(state) {
   return result;
 }
 
+export function getDefaultPages(state) {
+  ensureInterface(state)
+  let result = [];
+  let topEdge = getNumberOfPages(state);
+  for(let i = 1; i<= topEdge; i++) {
+    result.push(i)
+  }
+  return result;
+}
+
 export function getElementArray(state) {
   ensureInterface(state)
   if(state.count==0) return [];
 
-  let array = getShowingPages(state);
+  let array;
+  if(getNumberOfPages(state) <= state.visible) {
+    array = getDefaultPages(state);
+  } else {
+    array = getShowingPages(state);
+  }
 
   if (hasLessPages(state)) {
     array.unshift('<')
