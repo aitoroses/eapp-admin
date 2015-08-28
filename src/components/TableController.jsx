@@ -206,6 +206,9 @@ class GenericTable extends React.Component {
   }
 
   fetchCountAndItems(skip) {
+    this.setState({
+      loading: true
+    })
     return this.fetchCount()
     .then(this.fetchItemsByPage.bind(this, skip))
     .then(this.onSuccess.bind(this))
@@ -356,8 +359,14 @@ class PaginationComponent extends PureComponent {
   componentWillReceiveProps(nextProps) {
     if (nextProps.count != this.props.count) {
       this.setState({
-      pageArray: this.getElementArray(nextProps)
-    })
+        pageArray: this.getElementArray(nextProps)
+      })
+    }
+
+    if (nextProps.isLoading != this.props.isLoading) {
+      this.setState({
+        current: 1
+      })
     }
   }
 
