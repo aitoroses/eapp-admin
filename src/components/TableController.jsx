@@ -206,6 +206,9 @@ class GenericTable extends React.Component {
   }
 
   fetchCountAndItems(skip) {
+    this.setState({
+      loading: true
+    })
     return this.fetchCount()
     .then(this.fetchItemsByPage.bind(this, skip))
     .then(this.onSuccess.bind(this))
