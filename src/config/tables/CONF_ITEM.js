@@ -11,7 +11,8 @@ var config = {
         defaultValue: null,
         editable: true,
         validations: ['required', 'positive'],
-        tooltip: 'eapp.admin.tooltips.itemId'
+        tooltip: 'eapp.admin.tooltips.itemId',
+        searchable: true
       }
     },
     {
@@ -22,7 +23,8 @@ var config = {
         defaultValue: null,
         editable: true,
         validations: ['required',['maxLength', 200]],
-        tooltip: 'eapp.admin.tooltips.itemName'
+        tooltip: 'eapp.admin.tooltips.itemName',
+        searchable: true
       }
     },
     {
@@ -33,7 +35,8 @@ var config = {
         defaultValue: null,
         editable: true,
         validations: ['required', ['maxLength', 250]],
-        tooltip: 'eapp.admin.tooltips.itemDescription'
+        tooltip: 'eapp.admin.tooltips.itemDescription',
+        searchable: true
       }
     },
     {
@@ -44,7 +47,8 @@ var config = {
         format: 'MM-DD-YYYY',
         defaultValue: null,
         editable: false,
-        validations: []
+        validations: [],
+        searchable: false
       }
     },
     {
@@ -54,7 +58,8 @@ var config = {
         type: 'text',
         defaultValue: null,
         editable: false,
-        validations: []
+        validations: [],
+        searchable: false
       }
     },
     {
@@ -65,7 +70,8 @@ var config = {
         format: 'MM-DD-YYYY',
         defaultValue: null,
         editable: false,
-        validations: []
+        validations: [],
+        searchable: false
       }
     },
     {
@@ -75,7 +81,8 @@ var config = {
         type: 'text',
         defaultValue: null,
         editable: false,
-        validations: []
+        validations: [],
+        searchable: false
       }
     },
     {
@@ -85,7 +92,8 @@ var config = {
         type: 'checkbox',
         defaultValue: 0,
         editable: false,
-        validations: []
+        validations: [],
+        searchable: false
       }
     }
   ]
