@@ -48,6 +48,17 @@ export function toArray(data = []) {
   return data.map(mapToObj)
 }
 
+export function getSearchableColumns() {
+  let result = []
+  for (let field of this.fields) {
+    if (field.config.searchable) {
+      result.push(field.key)
+    }
+  }
+
+  return result
+}
+
 export default {
   items,
   disclaimers,

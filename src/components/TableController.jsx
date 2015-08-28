@@ -1,5 +1,5 @@
 import API from 'core/API'
-import {getNew, toObject, toArray} from 'config/tables'
+import {getNew, toObject, toArray, getSearchableColumns} from 'config/tables'
 import TableComponent from './TableComponent'
 import swal from 'sweetalert'
 import PureComponent from 'react-pure-render/Component'
@@ -187,30 +187,31 @@ class GenericTable extends React.Component {
     }
   }
 
-  fetchItemsByPage(skip) {
+  fetchItemsByPage(skip, filters) {
     if (skip != 0) {
       this.state.newRow != null ? this.onCancelAddNewRow() : this.onExitEditMode()
       this.removeSelectedRowStyles()
     }
 
     let query = {
-    payload: {},
+    payload: filters ? filters : {},
     skip: skip,
     limit: this.props.store.getMaxResultsPerPage()
   }
     return this.props.actions.fetchByPage(query)
   }
 
-  fetchCount() {
-    return this.props.actions.fetchCount()
+  fetchCount(filters) {
+    return this.props.actions.fetchCount(filters)
   }
 
-  fetchCountAndItems(skip) {
+  fetchCountAndItems(skip, payload) {
     this.setState({
       loading: true
     })
-    return this.fetchCount()
-    .then(this.fetchItemsByPage.bind(this, skip))
+    let filters = payload ? payload : {}
+    return this.fetchCount(filters)
+    .then(this.fetchItemsByPage.bind(this, skip, filters))
     .then(this.onSuccess.bind(this))
     .catch(this.onError.bind(this))
   }
@@ -270,6 +271,31 @@ class FiltersComponent extends React.Component {
     error:bool
   }
 
+  state = {
+    searchText: ''
+  }
+
+  onFilter() {
+    let searchVal = this.refs.searchText.getDOMNode().value
+    let config = this.props.store.getDefinition()
+    let fieldsArray
+    let payload
+    if (searchVal != null && searchVal != '') {
+      fieldsArray = getSearchableColumns.call(config)
+      payload = this.arrayToCustomObj(fieldsArray, searchVal)
+      this.props.fetchCountAndItems(0, payload)
+    }
+  }
+
+  arrayToCustomObj(array, value) {
+    let obj = {}
+    array.forEach((e) => {
+      obj[e] = value
+    })
+
+    return obj
+  }
+
   handleRefresh() {
     this.props.fetchCountAndItems(0)
   }
@@ -288,7 +314,7 @@ class FiltersComponent extends React.Component {
     return (
       <div className='search-toolbar' style={widthStyle}>
         <input className='search-input' type='text' ref='searchText'/>
-        <i className='fa fa-search fa-lg' onClick={function() {console.log('filtrando')}}></i>
+        <i className='fa fa-search fa-lg' onClick={this.onFilter}></i>
         {!isLoading ?
 
           <span className='search-results' onClick={this.handleRefresh}>
@@ -375,20 +401,22 @@ class PaginationComponent extends PureComponent {
     p.target.innerText == '<' ? (this.state.current - 1) :
     p.target.innerText == '>' ? (this.state.current + 1) : parseInt(p.target.innerText)
     )
-    let auxState = {...this.state}
-    auxState.current = page
-    this.setState({
-      current: page
-    })
-
-    //Hacer el fetch para la pagina P
-    let skip = (page * this.props.perPage) - this.props.perPage
-
-    this.props.fetchItemsByPage(skip).then(() => {
+    if (page != this.state.current) {
+      let auxState = {...this.state}
+      auxState.current = page
       this.setState({
-        pageArray: this.getElementArray()
+        current: page
       })
-    })
+
+      //Hacer el fetch para la pagina P
+      let skip = (page * this.props.perPage) - this.props.perPage
+
+      this.props.fetchItemsByPage(skip).then(() => {
+        this.setState({
+          pageArray: this.getElementArray()
+        })
+      })
+    }
   }
 
   render() {
