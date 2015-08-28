@@ -13,21 +13,22 @@ module.exports = function (config) {
     frameworks: [ 'mocha', 'sinon-chai' ],
 
     files: [
-      'tests.webpack.js'
+      'tests.webpack.js',
+      'lib/runtime.js',
+      'lib/platform.min.js'
     ],
 
     preprocessors: {
       'tests.webpack.js': [ 'webpack', 'sourcemap' ]
     },
 
-    reporters: [ 'dots', 'mocha' ],
+    reporters: [ 'mocha' ],
 
     webpack: {
       devtool: '#inline-source-map',
       module: {
         loaders: [
-          { test: /\.(js|jsx)$/, loader: 'babel-loader?stage=0', exclude: /node_modules/ },
-          { test: /\.coffee$/, loader: "coffee", exclude: /node_modules/},
+          { test: /\.(js|jsx)$/, loader: 'babel-loader?stage=0', exclude: /node_modules/ }
         ]
       },
       plugins: [

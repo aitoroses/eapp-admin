@@ -16,13 +16,13 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
         [dataHolderKey]: []
       }
 
-    	constructor() {
-    		this.bindState(bindKey);
-    	}
+      constructor() {
+        this.bindState(bindKey);
+      }
 
-    	getAll() {
-    		return this.state[dataHolderKey]
-    	}
+      getAll() {
+        return this.state[dataHolderKey]
+      }
 
       getCount() {
         return this.state.count
@@ -68,36 +68,38 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
         resolve(auxData)
       }
 
-    	fetchAll(payload, resolve) {
-    		var resource = new Resource();
-    		resource.findAll(payload, (data) => {
-    			getStateRef().set({[dataHolderKey]: data})
-    			resolve(data)
-    		})
-    	}
+      fetchAll(payload, resolve) {
+        var resource = new Resource();
+        resource.findAll(payload, (data) => {
+          getStateRef().set({[dataHolderKey]: data})
+          resolve(data)
+        })
+      }
 
-    	fetchByPage(query, resolve) {
-    		var resource = new Resource();
-    		resource.findByPage(query.payload, query.skip, query.limit, (data) => {
-    			getStateRef().set({[dataHolderKey]: data})
-    			resolve(data)
-    		})
-    	}
+      fetchByPage(query, resolve) {
+        var resource = new Resource();
+        resource.findByPage(query.payload, query.skip, query.limit, (data) => {
+          getStateRef().set({[dataHolderKey]: data})
+          resolve(data)
+        })
+      }
 
-    	fetchCount(payload = {}, resolve, reject) {
-    		var resource = new Resource();
-    		resource.count(payload, (data) => {
-    			getStateRef().set({count: data})
-    			resolve(data)
-    		}).catch((e) => {
-    			reject(e)
-    		})
-    	}
+      fetchCount(payload = {}, resolve, reject) {
+        var resource = new Resource();
+        resource.count(payload, (data) => {
+          getStateRef().set({count: data})
+          resolve(data)
+        }).catch((e) => {
+          reject(e)
+        })
+      }
 
-    	create(payload, resolve, reject){
+    	create(action, resolve, reject){
+        let {onServer, index, payload} = action;
+        getStateRef()[dataHolderKey].set({[index]: payload});
     		var resource = new Resource();
     		resource.create(payload, resolve).then(() => {
-    			// resolve(payload)
+    			resolve(payload)
     		}).catch((e) => {
     			reject(e)
     		})
@@ -106,20 +108,22 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey){
     	delete(payload, resolve, reject){
     		var resource = new Resource();
     		resource.delete(payload, resolve).then(() => {
-    			// resolve(payload)
+    			resolve(payload)
     		}).catch((e) => {
     			reject(e)
     		})
     	}
 
-    	update(action, resolve, reject){
+      update(action, resolve, reject){
         let {onServer, index, payload} = action;
+        let safeRef = getStateRef()[dataHolderKey][index]
         getStateRef()[dataHolderKey].set({[index]: payload});
         if (onServer) {
           var resource = new Resource();
       		resource.update(payload, resolve).then(() => {
-      			// resolve(payload)
+      			resolve(payload)
       		}).catch((e) => {
+            getStateRef()[dataHolderKey].set({[index]: safeRef});
       			reject(e)
       		})
       	}

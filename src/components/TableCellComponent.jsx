@@ -1,35 +1,36 @@
-import {decorate} from 'react-mixin';
+import {decorate} from 'react-mixin'
 import shallowEqual from 'react-pure-render/shallowEqual'
 
-var debounce = function (func, threshold, execAsap) {
-      var timeout;
+var debounce = function(func, threshold, execAsap) {
+  var timeout
 
-      return function debounced () {
-          var obj = this, args = arguments;
-          function delayed () {
-              if (!execAsap)
-                  func.apply(obj, args);
-              timeout = null;
-          };
+  return function debounced() {
+    var _this = this
+    var args = arguments
+    function delayed() {
+      if (!execAsap)
+          func.apply(_this, args)
+      timeout = null
+    }
 
-          if (timeout)
-              clearTimeout(timeout);
-          else if (execAsap)
-              func.apply(obj, args);
+    if (timeout)
+        clearTimeout(timeout)
+    else if (execAsap)
+        func.apply(_this, args)
 
-          timeout = setTimeout(delayed, threshold || 100);
-      };
+    timeout = setTimeout(delayed, threshold || 100)
   }
+}
 
 var ToggleParentClassMixin = {
-    componentDidMount() {
-      var node = React.findDOMNode(this);
-      var $node = $(node);
-      this.$node = $node;
+  componentDidMount() {
+      var node = React.findDOMNode(this)
+      var $node = $(node)
+      this.$node = $node
     },
 
-    toggleParentClass(klass) {
-      this.$node.parent().toggleClass(klass);
+  toggleParentClass(klass) {
+      this.$node.parent().toggleClass(klass)
     }
 }
 
@@ -53,59 +54,38 @@ class TableCellComponent extends React.Component {
     this.debouncedChange = debounce(props.onChange, 200)
   }
 
-
-  /*static styles = {
-    input: {
-      border: 'none',
-      outline: 'none',
-      lineHeight: '24px',
-      left: 0,
-      top: 0,
-      padding: '8px'
-    },
-    output: {
-      whiteSpace: 'nowrap',
-      lineHeight: '24px',
-      left: 0,
-      top: 0,
-      backgroundColor:'rgba(0,0,0,0) !important',
-      background: 'rgba(0,0,0,0) !important',
-      border: 0
-    }
-  }*/
-
   state = {
     validity: true
   }
 
   _getCellColor() {
-    var color = this.props.isEditing == true && this.state.validity == false ? "rgb(244, 177, 177)" : null;
-    return color;
+    var color = this.props.isEditing == true && this.state.validity == false ? 'rgb(244, 177, 177)' : null
+    return color
   }
 
   _getCellValue() {
-    return this.props.columnDef.config.type == 'date' && this.props.value!=null ? moment(this.props.value).format(this.props.columnDef.config.format) : this.props.value;
+    return this.props.columnDef.config.type == 'date' && this.props.value != null ? moment(this.props.value).format(this.props.columnDef.config.format) : this.props.value
   }
 
   componentDidMount() {
     if (this.isEditable()) {
-      this.toggleParentClass('no-padding');
+      this.toggleParentClass('no-padding')
     }
   }
 
   componentWillReceiveProps(nextProps) {
 
     if (this.isEditable(this.props) != this.isEditable(nextProps)) {
-      this.toggleParentClass('no-padding');
+      this.toggleParentClass('no-padding')
     }
   }
 
   isEditable(props) {
-    var p = props || this.props;
-    return p.isEditing && p.columnDef.config.editable;
+    var p = props || this.props
+    return p.isEditing && p.columnDef.config.editable
   }
 
-  shouldComponentUpdate(nextProps, nextState){
+  shouldComponentUpdate(nextProps, nextState) {
     return (!shallowEqual(nextProps, this.props) || !shallowEqual(nextState, this.state))
   }
 
@@ -123,21 +103,24 @@ class TableCellComponent extends React.Component {
       column: this.props.column
     }
 
-    if(this.props.columnDef.config.type == 'date'){
+    if (this.props.columnDef.config.type == 'date') {
       return <DateCellComponent {...props}></DateCellComponent>
     }
-    if(this.props.columnDef.config.type == 'text'){
+
+    if (this.props.columnDef.config.type == 'text') {
       return <TextCellComponent {...props}></TextCellComponent>
     }
-    if(this.props.columnDef.config.type == 'number'){
+
+    if (this.props.columnDef.config.type == 'number') {
       return <NumberCellComponent {...props}></NumberCellComponent>
     }
-    if(this.props.columnDef.config.type == 'checkbox'){
+
+    if (this.props.columnDef.config.type == 'checkbox') {
       return <CheckBoxCellComponent {...props}></CheckBoxCellComponent>
     }
 
     /*
-    var color = this._getCellColor();
+    var color = this._getCellColor()
     */
 
   }
@@ -157,13 +140,13 @@ class DateCellComponent extends React.Component {
     currentValue: this.props.value
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.setState({
       currentValue: nextProps.value
     })
   }
 
-  handleChange(e){
+  handleChange(e) {
     this.setState({
       currentValue: e.target.value
     })
@@ -171,8 +154,8 @@ class DateCellComponent extends React.Component {
   }
 
   render() {
-    var holder;
-    if(this.props.isEditing){
+    var holder
+    if (this.props.isEditing) {
       var style = {
         padding: '5px',
         border: 0,
@@ -181,9 +164,9 @@ class DateCellComponent extends React.Component {
       }
       holder = (
         <input
-          className="input-editable"
-          ref={this.props.columnDef.key+"_"+this.props.row}
-          type="text"
+          className='input-editable'
+          ref={this.props.columnDef.key + '_' + this.props.row}
+          type='text'
           value={this.state.currentValue}
           onChange={this.handleChange}
           onBlur={this.handleOnBlur}
@@ -199,7 +182,8 @@ class DateCellComponent extends React.Component {
         <div style={style}>{this.props.value}</div>
       )
     }
-    return holder;
+
+    return holder
   }
 }
 
@@ -217,13 +201,13 @@ class TextCellComponent extends React.Component {
     currentValue: this.props.value
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.setState({
       currentValue: nextProps.value
     })
   }
 
-  handleChange(e){
+  handleChange(e) {
     this.setState({
       currentValue: e.target.value
     })
@@ -231,8 +215,8 @@ class TextCellComponent extends React.Component {
   }
 
   render() {
-    var holder;
-    if(this.props.isEditing){
+    var holder
+    if (this.props.isEditing) {
       var style = {
         padding: '5px',
         border: 0,
@@ -241,8 +225,8 @@ class TextCellComponent extends React.Component {
       }
       holder = (
         <input
-          className="input-editable"
-          type="text"
+          className='input-editable'
+          type='text'
           value={this.state.currentValue}
           onChange={this.handleChange}
           style={style}
@@ -257,7 +241,8 @@ class TextCellComponent extends React.Component {
         <div style={style}>{this.props.value}</div>
       )
     }
-    return holder;
+
+    return holder
   }
 }
 
@@ -275,13 +260,13 @@ class NumberCellComponent extends React.Component {
     currentValue: this.props.value
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.setState({
       currentValue: nextProps.value
     })
   }
 
-  handleChange(e){
+  handleChange(e) {
     this.setState({
       currentValue: e.target.value
     })
@@ -289,8 +274,8 @@ class NumberCellComponent extends React.Component {
   }
 
   render() {
-    var holder;
-    if(this.props.isEditing){
+    var holder
+    if (this.props.isEditing) {
       var style = {
         padding: '5px',
         border: 0,
@@ -299,9 +284,9 @@ class NumberCellComponent extends React.Component {
       }
       holder = (
         <input
-          className="input-editable"
-          ref={this.props.columnDef.key+"_"+this.props.row}
-          type="number"
+          className='input-editable'
+          ref={this.props.columnDef.key + '_' + this.props.row}
+          type='number'
           value={this.state.currentValue}
           onChange={this.handleChange}
           onBlur={this.handleOnBlur}
@@ -317,7 +302,8 @@ class NumberCellComponent extends React.Component {
         <div style={style}>{this.props.value}</div>
       )
     }
-    return holder;
+
+    return holder
   }
 }
 
@@ -335,13 +321,13 @@ class CheckBoxCellComponent extends React.Component {
     currentValue: this.props.value
   }
 
-  componentWillReceiveProps(nextProps){
+  componentWillReceiveProps(nextProps) {
     this.setState({
       currentValue: nextProps.value
     })
   }
 
-  handleChange(e){
+  handleChange(e) {
     this.setState({
       currentValue: e.target.value
     })
@@ -349,21 +335,26 @@ class CheckBoxCellComponent extends React.Component {
   }
 
   render() {
-    var holder;
-    if(this.props.isEditing){
+    var holder
+    if (this.props.isEditing) {
       var style = {
-        padding: '5px',
-        border: 0
+        width: '98%',
+        backgroundColor: 'white',
+        height: '45px',
+        paddingTop: '15px',
+        border: '0 !important'
       }
+
       holder = (
-        <input
-          ref={this.props.columnDef.key+"_"+this.props.row}
-          type="checkbox"
-          value={this.state.currentValue}
-          onChange={this.handleChange}
-          onBlur={this.handleOnBlur}
-          style={style}
-        />
+        <div style={style}>
+          <input
+            ref={this.props.columnDef.key + '_' + this.props.row}
+            type='checkbox'
+            value={this.state.currentValue}
+            onChange={this.handleChange}
+            onBlur={this.handleOnBlur}
+          />
+        </div>
       )
     } else {
       var style = {
@@ -373,16 +364,17 @@ class CheckBoxCellComponent extends React.Component {
       }
       holder = (
         <input
-          ref="input"
+          ref='input'
           disabled={true}
-          type="checkbox"
+          type='checkbox'
           defaultValue={this.props.value}
           style={style}
         />
       )
     }
-    return holder;
+
+    return holder
   }
 }
 
-export default TableCellComponent;
+export default TableCellComponent
