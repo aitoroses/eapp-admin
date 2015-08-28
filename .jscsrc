@@ -72,7 +72,6 @@
   "requirePaddingNewLinesAfterBlocks": true,
   "disallowSemicolons": true,
   "safeContextKeyword": "_this",
-  "validateLineBreaks": "LF",
   "validateQuoteMarks": "'",
   "validateIndentation": 2
 }
