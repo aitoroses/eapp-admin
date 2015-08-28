@@ -10,13 +10,40 @@ function delay(res, result, amount) {
 }
 
 function getRest(collection, pathname, key) {
+
+  function filter(items, record) {
+    var result = items
+    var searchKeys = Object.keys(record).filter(function(k) {
+      return k != null
+    })
+
+    if (searchKeys.length > 0) {
+      result = result.filter(function(item) {
+        var anyMatch = searchKeys
+          .map(function(k) {
+            return (new RegExp(record[k])).test(item[k])
+          })
+          .filter(function(c) {
+            return c == true
+          })
+
+        return anyMatch.length > 0
+      })
+    }
+
+    return result
+  }
+
   return [
     {
       method: 'POST',
       path: '/' + pathname + '/selectbyexample', //?firstResult=0&maxResults=10'
       reply(params, query, body) {
-        collection.find(body).sort({[key]: 1}).exec(function(err, items) {
-          var result = query.firstResult ? items.slice(query.firstResult, query.firstResult + query.maxResults) : items
+        collection.find({}).sort({[key]: 1}).exec(function(err, items) {
+          var result = filter(items, body)
+          result = query.firstResult ?
+            result.slice(query.firstResult, query.firstResult + query.maxResults) :
+            result
           this.res.json(result)
         }.bind(this))
       }
@@ -24,8 +51,9 @@ function getRest(collection, pathname, key) {
       method: 'POST',
       path: '/' + pathname + '/count',
       reply(params, query, body) {
-        collection.find(body, function(err, items) {
-          this.res.json(items.length)
+        collection.find({}, function(err, items) {
+          var result = filter(items, body)
+          this.res.json(result.length)
         }.bind(this))
       }
     },
