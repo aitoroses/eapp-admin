@@ -52,6 +52,7 @@
         }
     }
     .public_fixedDataTableCell_main input {
-        width:100%
+        margin: auto;
+        display: block
     }
 }
