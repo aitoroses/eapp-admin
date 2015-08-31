@@ -17,7 +17,7 @@ class FlowStepTable extends React.Component {
 	}
 
 	componentDidMount(){
-		actions.querySteps();
+		//actions.querySteps();
 	}
 
 	state = {
@@ -66,8 +66,36 @@ class FlowStepTable extends React.Component {
 			})}.bind(this))
 	}
 
-	onSave() {
+	onSave(arrayValue, row) {
 		console.log("saving");
+		let config = tables["steps"];
+		let newObject = toObject.call(config, arrayValue);
+		let action = {
+			index: row,
+			payload: newObject
+		}
+		actions.update(action);
+		setTimeout(function(){
+			this.setState({
+				selectedRow: null,
+				newRow: null
+		})}.bind(this))
+	}
+
+	onCreate(arrayValue, row) {
+		console.log("creating");
+		let config = tables["steps"];
+		let newObject = toObject.call(config, arrayValue);
+		let action = {
+			index: row,
+			payload: newObject
+		}
+		actions.create(action);
+		setTimeout(function(){
+			this.setState({
+				selectedRow: null,
+				newRow: null
+		})}.bind(this))
 	}
 
 	onAddNewRow(){
@@ -79,6 +107,7 @@ class FlowStepTable extends React.Component {
 			var id = Math.round(Math.random()*100);
 			newObj.stepId = id;
 			newObj.organizationalUnit = "REQUEST";
+			newObj.stepType = "REV"
 			actions.addNew(newObj);
 			setTimeout(function(){
 				this.setState({
@@ -89,8 +118,7 @@ class FlowStepTable extends React.Component {
 	}
 
 	getTransformedData(config, data){
-		let ret = toArray.call(config, data);
-		return ret;
+		return toArray.call(config, data);
 	}
 
 	render() {
@@ -100,9 +128,11 @@ class FlowStepTable extends React.Component {
 		var p_data = this.getTransformedData(t, data)
 		let width = 1000;
 		let columnsWidth = this.calculateColumnsWidth(1000, columnsDef);
+		let perPage = 10;
 
 		return (
 			<div>
+				<button onClick={this.onAddNewRow}>Add Step</button>
 				<TableComponent
 					columnsWidth={columnsWidth}
 					width={width}
@@ -113,9 +143,10 @@ class FlowStepTable extends React.Component {
 					onEnterEditMode={this.onEnterEditMode}
 					onExitEditMode={this.onExitEditMode}
 					onCancelAddNewRow={this.onCancelAddNewRow}
-					onSave={this.onSave}>
+					onSave={this.onSave}
+					onCreate={this.onCreate}
+					perPage={perPage}>
 				</TableComponent>
-				<button onClick={this.onAddNewRow}>Add</button>
 			</div>
 		)
 	}

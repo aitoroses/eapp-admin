@@ -204,6 +204,35 @@ class FlowsActions {
     	resolve(auxData);
     }
 
+    create(action, resolve) {
+    	var branch = FlowsStore.getSteps();
+    	let {index, payload} = action;
+
+    	let steps = [...branch.steps];
+    	steps[index] = payload;
+
+    	branch.set({steps});
+    }
+
+    update(action, resolve) {
+    	var branch = FlowsStore.getSteps();
+    	let {index, payload} = action;
+
+    	let steps = [...branch.steps];
+    	steps[index] = payload;
+
+    	branch.set({steps});
+    }
+
+    delete(row, resolve) {
+    	var branch = FlowsStore.getSteps();
+
+    	let steps = [...branch.steps];
+    	steps.splice(row, 1);
+    	
+    	branch.set({steps});
+    }
+
 }
 
 
