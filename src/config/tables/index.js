@@ -1,9 +1,9 @@
-import items from './CONF_ITEM';
-import disclaimers from './NP5_CONF_DISCLAIMER';
-import countries from './NP5_COUNTRY';
-import itemsPermission from './NP5_ITEMS_PERMISSION';
-import tas from './NP5_THERAPEUTICAL_AREA';
-import steps from './CONF_STEP';
+import items from './CONF_ITEM'
+import disclaimers from './NP5_CONF_DISCLAIMER'
+import countries from './NP5_COUNTRY'
+import itemsPermission from './NP5_ITEMS_PERMISSION'
+import tas from './NP5_THERAPEUTICAL_AREA'
+import steps from './CONF_STEP'
 
 export function getNew() {
   let o = {}
@@ -49,7 +49,7 @@ export function toArray(data = []) {
   return data.map(mapToObj)
 }
 
-export function getSearchableColumns() {
+export function getSearchFilter(value) {
   let result = []
   for (let field of this.fields) {
     if (field.config.searchable) {
@@ -57,7 +57,12 @@ export function getSearchableColumns() {
     }
   }
 
-  return result
+  let obj = {}
+  result.forEach((e) => {
+    obj[e] = value
+  })
+
+  return obj
 }
 
 export default {
