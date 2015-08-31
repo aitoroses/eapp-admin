@@ -68,6 +68,9 @@ class FlowsStore {
 						}
 					}
 				},
+				steps: {
+					steps: []
+				},
 				flowfields: {
 						masterFields: [],
 						flowfields: []
@@ -120,6 +123,10 @@ class FlowsStore {
 
 	getFlowFields() {
 		return this.state.createFlow.flowfields;
+	}
+
+	getSteps() {
+		return this.state.createFlow.steps;
 	}
 
 	getFlowTasRuntime(combo) {

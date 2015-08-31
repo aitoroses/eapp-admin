@@ -2,6 +2,7 @@ import {store as FlowsStore} from 'stores/FlowsStore';
 import ItemsActions from 'actions/ItemsActions';
 import TasActions from 'actions/TasActions';
 import FieldsActions from 'actions/FieldsActions';
+import StepsActions from 'actions/StepsActions';
 
 import shallowEqual from 'react-pure-render/shallowEqual';
 
@@ -31,6 +32,13 @@ class FlowsActions {
 				}
 			});
 			fields.set({masterFields});
+		})
+	}
+
+	querySteps(payload, resolve) {
+		StepsActions.fetchAll({}).then((steps) => {
+			var main_steps = FlowsStore.getSteps();
+			main_steps.set({steps});
 		})
 	}
 
@@ -179,6 +187,22 @@ class FlowsActions {
 			return update();
 		}
 	}
+
+	addNew(payload, resolve) {
+		var steps = FlowsStore.getSteps();
+        let auxData = [...[], ...steps.steps];
+        auxData.unshift(payload);
+        steps.set({"steps": auxData})
+        resolve(auxData)
+    }
+
+    cancelNew(payload, resolve) {
+    	var steps = FlowsStore.getSteps();
+    	let auxData = [...[], ...steps.steps];
+    	auxData.shift();
+    	steps.set({"steps": auxData});
+    	resolve(auxData);
+    }
 
 }
 
