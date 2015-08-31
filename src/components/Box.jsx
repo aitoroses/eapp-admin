@@ -83,7 +83,7 @@ class Box extends React.Component {
     if (this.props.options.length > 0) {
       var _this = this
       var optionNodes = this.props.options.map(function(option) {
-        return <option key={option[_this.props.valueField]} value={option[_this.props.valueField]}>{option[self.props.labelField]}</option>
+        return <option key={option[_this.props.valueField]} value={option[_this.props.valueField]}>{option[_this.props.labelField]}</option>
       })
     }
 
