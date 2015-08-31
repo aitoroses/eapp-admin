@@ -46,12 +46,13 @@ class TableCellComponent extends React.Component {
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
     row: React.PropTypes.number,
-    column: React.PropTypes.number
+    column: React.PropTypes.number,
+    errors: React.PropTypes.object
   }
 
   constructor(props) {
     super()
-    this.debouncedChange = debounce(props.onChange, 200)
+    this.debouncedChange = debounce(props.onChange, 150)
   }
 
   state = {
@@ -100,7 +101,8 @@ class TableCellComponent extends React.Component {
       columnDef: this.props.columnDef,
       onChange: this.debouncedChange,
       row: this.props.row,
-      column: this.props.column
+      column: this.props.column,
+      errors: this.props.errors
     }
 
     if (this.props.columnDef.config.type == 'date') {
@@ -133,7 +135,8 @@ class DateCellComponent extends React.Component {
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
     row: React.PropTypes.number,
-    column: React.PropTypes.number
+    column: React.PropTypes.number,
+    errors: React.PropTypes.object
   }
 
   state = {
@@ -162,9 +165,10 @@ class DateCellComponent extends React.Component {
         width:'100%',
         height:'50px'
       }
+      let className = !this.props.errors ? 'input-editable' : this.props.errors.valid ? 'input-editable' : 'input-editable input-validation-error'
       holder = (
         <input
-          className='input-editable'
+          className={className}
           ref={this.props.columnDef.key + '_' + this.props.row}
           type='text'
           value={this.state.currentValue}
@@ -194,7 +198,8 @@ class TextCellComponent extends React.Component {
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
     row: React.PropTypes.number,
-    column: React.PropTypes.number
+    column: React.PropTypes.number,
+    errors: React.PropTypes.object
   }
 
   state = {
@@ -223,9 +228,10 @@ class TextCellComponent extends React.Component {
         width:'100%',
         height:'50px'
       }
+      let className = !this.props.errors ? 'input-editable' : this.props.errors.valid ? 'input-editable' : 'input-editable input-validation-error'
       holder = (
         <input
-          className='input-editable'
+          className={className}
           type='text'
           value={this.state.currentValue}
           onChange={this.handleChange}
@@ -253,7 +259,8 @@ class NumberCellComponent extends React.Component {
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
     row: React.PropTypes.number,
-    column: React.PropTypes.number
+    column: React.PropTypes.number,
+    errors: React.PropTypes.object
   }
 
   state = {
@@ -276,15 +283,16 @@ class NumberCellComponent extends React.Component {
   render() {
     var holder
     if (this.props.isEditing) {
-      var style = {
+      let style = {
         padding: '5px',
         border: 0,
         width:'100%',
         height:'50px'
       }
+      let className = !this.props.errors ? 'input-editable' : this.props.errors.valid ? 'input-editable' : 'input-editable input-validation-error'
       holder = (
         <input
-          className='input-editable'
+          className={className}
           ref={this.props.columnDef.key + '_' + this.props.row}
           type='number'
           value={this.state.currentValue}
@@ -314,7 +322,8 @@ class CheckBoxCellComponent extends React.Component {
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
     row: React.PropTypes.number,
-    column: React.PropTypes.number
+    column: React.PropTypes.number,
+    errors: React.PropTypes.object
   }
 
   state = {
@@ -343,6 +352,12 @@ class CheckBoxCellComponent extends React.Component {
         height: '45px',
         paddingTop: '15px',
         border: '0 !important'
+      }
+      if (this.props.errors) {
+        if (!this.props.errors.valid) {
+          style.backgroundColor = '#F3C9C9'
+          style.border = '2px solid #EF6C6C ! important'
+        }
       }
 
       holder = (

@@ -6,7 +6,7 @@ var validationRules = {
       errorId: 'eapp.admin.errors.number.required',
       label: '',
       validate: function(x) {
-        return x != null
+        return x != null && x != ''
       }
     },
     positive: {
@@ -22,7 +22,7 @@ var validationRules = {
       errorId: 'eapp.admin.errors.text.required',
       label: '',
       validate: function(x) {
-        return x != null
+        return x != null && x != ''
       }
     },
     maxLength: {
@@ -49,9 +49,12 @@ var validationRules = {
   }
 }
 
-export function validate(input, rules) {
+export function validate({value, type, rules}) {
+  //Validations of inputs
+  if (type == null) {
+    return {valid: false, errors: [{valid:false, errorId: 'eapp.admin.errors.null.type'}], length:1}
+  }
 
-  var type = typeof input
   var ruleSet = validationRules[type]
 
   var results = rules.map(r => {
@@ -61,12 +64,12 @@ export function validate(input, rules) {
       var rule = ruleSet[ruleName]
       if (!rule) throw Error('Not valid rule for type ' + type + ' called ' + ruleName + ' and args ' + JSON.stringify(args))
       var fn = rule.validate
-      return {valid: fn.apply(input, args), validation: r, errorId: rule.errorId}
+      return {valid: fn.apply(value, [value, ...args]), validation: r, errorId: rule.errorId}
     }    else {
       var rule = ruleSet[r]
       if (!rule) throw Error('Not valid rule for type ' + type + ' called ' + r)
       var fn = rule.validate
-      return {valid: fn(input), validation: r, errorId: rule.errorId}
+      return {valid: fn(value), validation: r, errorId: rule.errorId}
     }
   })
 

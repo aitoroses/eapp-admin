@@ -75,12 +75,37 @@ class GenericTable extends React.Component {
 
   }
 
+  constructor() {
+    super()
+    this.errorMap = new WeakMap()
+  }
+
   state = {
     selectedRow:null,
     newRow:null,
     error:false,
     loading: true,
     filter: {}
+  }
+
+  handleValidateCell(evaluation, colId) {
+    let currentObj = this.props.store.getAll()[this.state.selectedRow]
+    let objErrors = this.errorMap.get(currentObj)
+    if (!objErrors) {
+      objErrors = {}
+      this.errorMap.set(currentObj, objErrors)
+    }
+
+    objErrors[colId] = evaluation
+    this.forceUpdate()
+  }
+
+  getErrorForRow() {
+    let currentObj = this.props.store.getAll()[this.state.selectedRow]
+    let config = this.props.store.getDefinition()
+    let errors = this.errorMap.get(currentObj)
+    if (!errors) return []
+    return toArray.call(config, [errors])[0]
   }
 
   onFilterChange(value) {
@@ -287,13 +312,16 @@ class GenericTable extends React.Component {
           onCancelAddNewRow={this.onCancelAddNewRow}
           onSave={this.onSave}
           onCreate={this.onCreate}
-          perPage={perPage}/>
+          perPage={perPage}
+          onValidateCell={this.handleValidateCell.bind(this)}
+          errorGetter={this.getErrorForRow.bind(this)}/>
         <FooterComponent
           isLoading={isLoading}
           isError={isError}
           perPage={perPage}
           addRowFunc={this.onAddNewRow}
-          width={width} />
+          width={width}
+          errorMap={this.errorMap}/>
       </div>
     )
   }
@@ -386,7 +414,8 @@ class FooterComponent extends React.Component {
     addRowFunc: func,
     perPage: number,
     isError: bool,
-    isLoading: bool
+    isLoading: bool,
+    errorMap: object
   }
 
   handleAddRow() {
