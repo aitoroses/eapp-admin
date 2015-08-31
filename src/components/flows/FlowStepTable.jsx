@@ -121,6 +121,46 @@ class FlowStepTable extends React.Component {
 		return toArray.call(config, data);
 	}
 
+	onTestSequence() {
+		console.log("Test Sequence");
+		var fs = 1;
+		var firstStep = null;
+		var steps = FlowStore.getSteps().steps;
+		for (var i = 0; i < steps.length; i++) {
+			if(steps[i].stepId==fs) {
+				firstStep = steps[i];
+			}
+		};
+
+		var num = 0;
+	    var exit=true;
+	    var flag;
+
+	    while(exit){
+	        flag=false;
+	        for (var i = 0; i < steps.length; i++) {
+	          if(steps[i].stepId!=firstStep.stepId){
+	            if((firstStep.defaultNextStepId==steps[i].stepId && flag==false)||(firstStep.defaultNextStepId==-1 && flag==false)){
+	              flag=true;
+	              num++;
+	              if(firstStep.defaultNextStepId!=-1){
+	                firstStep=steps[i];
+	              }else{
+	                exit=false;
+	              }
+	            }
+	          }
+	        };
+	        if(flag==false) console.log(false);
+	      }
+	      if(firstStep.defaultNextStepId==-1 && num==steps.length){
+	        console.log(true);
+	      }else{
+	        console.log(false);
+	      }
+
+	}
+
 	render() {
 		var t = tables["steps"];
 		var columnsDef = t.fields;
@@ -133,6 +173,7 @@ class FlowStepTable extends React.Component {
 		return (
 			<div>
 				<button onClick={this.onAddNewRow}>Add Step</button>
+				<button onClick={this.onTestSequence}>Test Sequence</button>
 				<TableComponent
 					columnsWidth={columnsWidth}
 					width={width}
