@@ -1,57 +1,60 @@
-'use strict'
+var express = require('express');
+var request = require('request');
+var path = require('path');
 
-let request = require('request')
-let path = require('path')
-
-let webpack = require('webpack')
-let WebpackDevServer = require('webpack-dev-server')
-let config = require('./webpack.config.js')
+var webpack = require("webpack");
+var WebpackDevServer = require('webpack-dev-server');
+var config = require("./webpack.config.js");
 
 // -------- Entry point -------------------
 config.entry = [
   './lib/main.js',
   'webpack/hot/dev-server',
-  'webpack-dev-server/client?http://localhost:8080'
+  'webpack-dev-server/client?http://localhost:8081'
 ]
 
-config.plugins.push(new webpack.HotModuleReplacementPlugin())
-config.plugins.push(new webpack.NoErrorsPlugin())
+config.plugins.push(new webpack.HotModuleReplacementPlugin());
+config.plugins.push(new webpack.NoErrorsPlugin());
 
-config.output.path = '/'
+config.output.path = "/";
 
-// ------ webpack-dev-server --------
-let server = new WebpackDevServer(webpack(config), {
-  contentBase: __dirname,
-  hot: true,
-  quiet: false,
-  noInfo: false,
-  publicPath: '/lib/',
-
-  stats: { colors: true }
-})
+// -------- proxy -------------------
+var app = express();
 
 // Webpack Hot Updates
-server.use(/^.*update\.(json|js)$/, function(req, res) {
-  let url = 'http://localhost:8080/lib' + req.baseUrl
+app.use(/^.*update\.(json|js)$/, function(req, res) {
+  var url = "http://localhost:8081/lib" + req.baseUrl
   request(url)
-  .pipe(res)
-})
+  .pipe(res);
+});
 
 // Font assets
-server.use(/^.*\.(woff|woff2|ttf|eot|svg)$/, function(req, res) {
-  let url = 'http://localhost:8080/lib' + req.baseUrl
+app.use(/^.*\.(woff|woff2|ttf|eot|svg)$/, function(req, res) {
+  var url = "http://localhost:8081/lib" + req.baseUrl
   request(url)
-  .pipe(res)
-})
+  .pipe(res);
+});
 
 // Server proxying
-server.use('/*', function(req, res) {
-  let url = 'http://localhost:8080' + req.baseUrl
+app.use('/*', function(req, res) {
+  var url = "http://localhost:8081" + req.baseUrl
   request(url)
-  .pipe(res)
-})
+  .pipe(res);
+});
+
+// ------ webpack-dev-server --------
+var server = new WebpackDevServer(webpack(config), {
+    contentBase: __dirname,
+    hot: true,
+    quiet: false,
+    noInfo: false,
+    publicPath: "/lib/",
+
+    stats: { colors: true }
+});
 
 // ------ run the two servers -------
-server.listen(8080, 'localhost', function() {
-  console.log('Server is listening on port 8080')
-})
+server.listen(8081, "localhost", function() {});
+app.listen(8080, function() {
+  console.log("Server is listening on port 8080")
+});
