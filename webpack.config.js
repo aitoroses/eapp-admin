@@ -46,8 +46,7 @@ module.exports = {
 
   module: {
     preLoaders: [
-
-      // { test: /\.(js|jsx)$/, loaders: ['jscs'], exclude: /node_modules/ }
+      { test: /\.(js|jsx)$/, loaders: ['jscs'], exclude: /node_modules/ }
     ],
     loaders: [
       { test: /\.(js|jsx)$/, loaders: ['react-hot', 'babel?stage=0'], exclude: /node_modules/ },

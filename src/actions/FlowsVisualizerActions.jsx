@@ -1,8 +1,8 @@
-import createTesselBlueprint from '../lib/createTesselBlueprint';
-import {FlowsResource} from '../lib/Resource';
+import createTesselBlueprint from '../lib/createTesselBlueprint'
+import {FlowsResource} from '../lib/Resource'
 
-var [store, actions] = createTesselBlueprint(FlowsResource, 'flowsVisualizer', 'flows');
+var [store, actions] = createTesselBlueprint(FlowsResource, 'flowsVisualizer', 'flows')
 
-window.actionsFlows = actions;
+window.actionsFlows = actions
 
-export default actions;
+export default actions

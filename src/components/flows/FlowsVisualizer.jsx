@@ -1,18 +1,17 @@
-import {actions as FlowsVisualizerActions} from 'actions/FlowsVisualizerActions';
-import {store as FlowsVisualizerStore} from 'stores/FlowsVisualizerStore';
-
+import {actions as FlowsVisualizerActions} from 'actions/FlowsVisualizerActions'
+import {store as FlowsVisualizerStore} from 'stores/FlowsVisualizerStore'
 
 class FlowsVisualizer extends React.Component {
 
-    componentDidMount() {
+  componentDidMount() {
 
-    }
+  }
 
-	render() {
-		return (
-            <div>Hola</div>
-        )
-	}
+  render() {
+    return (
+      <div>Hola</div>
+    )
+  }
 }
 
-export default FlowsVisualizer;
+export default FlowsVisualizer
