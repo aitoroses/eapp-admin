@@ -61,7 +61,7 @@ function getRest(collection, pathname, key) {
       method: 'PUT',
       path: '/' + pathname + '/update',
       reply(params, query, body) {
-        collection.update({itemId: body.itemId}, body, function(err, item) {
+        collection.update({[key]: body[key]}, body, function(err, item) {
           if (err) {
             this.res.json(false)
           } else {

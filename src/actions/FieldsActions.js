@@ -1,6 +1,6 @@
-import createTesselBlueprint from '../lib/createTesselBlueprint';
-import {MasterFieldsResource} from '../lib/Resource';
+import createTesselBlueprint from '../lib/createTesselBlueprint'
+import {MasterFieldsResource} from '../lib/Resource'
 
-var [store, actions] = createTesselBlueprint(MasterFieldsResource, 'fields', 'fields');
+var [store, actions] = createTesselBlueprint(MasterFieldsResource, 'fields', 'fields')
 
-export default actions;
+export default actions
