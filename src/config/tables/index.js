@@ -49,7 +49,7 @@ export function toArray(data = []) {
   return data.map(mapToObj)
 }
 
-export function getSearchableColumns() {
+export function getSearchFilter(value) {
   let result = []
   for (let field of this.fields) {
     if (field.config.searchable) {
@@ -57,7 +57,12 @@ export function getSearchableColumns() {
     }
   }
 
-  return result
+  let obj = {}
+  result.forEach((e) => {
+    obj[e] = value
+  })
+
+  return obj
 }
 
 export default {

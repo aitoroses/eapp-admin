@@ -1,6 +1,7 @@
 import {Table, Column} from 'fixed-data-table'
 import TableCellComponent from './TableCellComponent'
 import PureComponent from 'react-pure-render/Component'
+import validate from 'core/fieldValidations'
 
 class TableComponent extends PureComponent {
 
@@ -16,7 +17,9 @@ class TableComponent extends PureComponent {
     columnsWidth: React.PropTypes.array.isRequired,
     onSave: React.PropTypes.func.isRequired,
     onCreate: React.PropTypes.func.isRequired,
-    perPage: React.PropTypes.number.isRequired
+    perPage: React.PropTypes.number.isRequired,
+    onValidateCell: React.PropTypes.func.isRequired,
+    errorGetter: React.PropTypes.func.isRequired
   }
 
   componentWillReceiveProps(nextProps) {
@@ -39,6 +42,7 @@ class TableComponent extends PureComponent {
   getRenderer(columnDef, value, column, colData, row) {
     let isEditing = (this.props.selectedRow == row || this.props.newRow == row)
     let val = isEditing ? this.state.safeObject[column] : value
+    let errors = this.props.errorGetter()[column]
     return <TableCellComponent
               key={row + '-' + column}
               isEditing={isEditing}
@@ -47,6 +51,7 @@ class TableComponent extends PureComponent {
               onChange={this.onChange}
               row={row}
               column={column}
+              errors={errors}
             />
   }
 
@@ -127,9 +132,13 @@ class TableComponent extends PureComponent {
     }
   }
 
-  onChange(value, key) {
+  onChange(value, col) {
+    let {key, config} = this.props.columnsDef[col]
+    let {type, validations: rules}  = config
+    let evaluation = validate({value, type, rules})
+    this.props.onValidateCell(evaluation, key)
     let auxSafeObject = {...this.state.safeObject}
-    auxSafeObject[key] = value
+    auxSafeObject[col] = value
     this.setState({
       safeObject: auxSafeObject
     })

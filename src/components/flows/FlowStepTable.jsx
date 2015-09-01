@@ -17,7 +17,7 @@ class FlowStepTable extends React.Component {
   }
 
   componentDidMount() {
-    actions.querySteps()
+    // actions.querySteps();
   }
 
   state = {
@@ -57,18 +57,36 @@ class FlowStepTable extends React.Component {
       })
     }
 
-  onCancelAddNewRow() {
-    console.log('cancel')
-    actions.cancelNew()
+  onSave(arrayValue, row) {
+    console.log('saving')
+    let config = tables.steps
+    let newObject = toObject.call(config, arrayValue)
+    let action = {
+      index: row,
+      payload: newObject
+    }
+    actions.update(action)
     setTimeout(function() {
       this.setState({
         selectedRow: null,
-        newRow:null
+        newRow: null
       })}.bind(this))
   }
 
-  onSave() {
-    console.log('saving')
+  onCreate(arrayValue, row) {
+    console.log('creating')
+    let config = tables.steps
+    let newObject = toObject.call(config, arrayValue)
+    let action = {
+      index: row,
+      payload: newObject
+    }
+    actions.create(action)
+    setTimeout(function() {
+      this.setState({
+        selectedRow: null,
+        newRow: null
+      })}.bind(this))
   }
 
   onAddNewRow() {
@@ -80,6 +98,7 @@ class FlowStepTable extends React.Component {
       var id = Math.round(Math.random() * 100)
       newObj.stepId = id
       newObj.organizationalUnit = 'REQUEST'
+      newObj.stepType = 'REV'
       actions.addNew(newObj)
       setTimeout(function() {
         this.setState({
@@ -90,8 +109,49 @@ class FlowStepTable extends React.Component {
   }
 
   getTransformedData(config, data) {
-    let ret = toArray.call(config, data)
-    return ret
+    return toArray.call(config, data)
+  }
+
+  onTestSequence() {
+    console.log('Test Sequence')
+    var fs = 1
+    var firstStep = null
+    var steps = FlowStore.getSteps().steps
+    for (var i = 0; i < steps.length; i++) {
+      if (steps[i].stepId == fs) {
+        firstStep = steps[i]
+      }
+    }
+
+    var num = 0
+    var exit = true
+    var flag
+
+    while (exit) {
+      flag = false
+      for (var i = 0; i < steps.length; i++) {
+        if (steps[i].stepId != firstStep.stepId) {
+          if ((firstStep.defaultNextStepId == steps[i].stepId && flag == false) || (firstStep.defaultNextStepId == -1 && flag == false)) {
+            flag = true
+            num++
+            if (firstStep.defaultNextStepId != -1) {
+              firstStep = steps[i]
+            }else {
+              exit = false
+            }
+          }
+        }
+      }
+
+      if (flag == false) console.log(false)
+    }
+
+    if (firstStep.defaultNextStepId == -1 && num == steps.length) {
+      console.log(true)
+    }else {
+      console.log(false)
+    }
+
   }
 
   render() {
@@ -101,9 +161,12 @@ class FlowStepTable extends React.Component {
     var pData = this.getTransformedData(t, data)
     let width = 1000
     let columnsWidth = this.calculateColumnsWidth(1000, columnsDef)
+    let perPage = 10
 
     return (
       <div>
+        <button onClick={this.onAddNewRow}>Add Step</button>
+        <button onClick={this.onTestSequence}>Test Sequence</button>
         <TableComponent
           columnsWidth={columnsWidth}
           width={width}
@@ -114,9 +177,10 @@ class FlowStepTable extends React.Component {
           onEnterEditMode={this.onEnterEditMode}
           onExitEditMode={this.onExitEditMode}
           onCancelAddNewRow={this.onCancelAddNewRow}
-          onSave={this.onSave}>
+          onSave={this.onSave}
+          onCreate={this.onCreate}
+          perPage={perPage}>
         </TableComponent>
-        <button onClick={this.onAddNewRow}>Add</button>
       </div>
     )
   }

@@ -1,11 +1,32 @@
 import API from 'core/API'
-import {getNew, toObject, toArray, getSearchableColumns} from 'config/tables'
+import {getNew, toObject, toArray, getSearchFilter} from 'config/tables'
 import TableComponent from './TableComponent'
 import swal from 'sweetalert'
 import PureComponent from 'react-pure-render/Component'
 import {getElementArray, PaginationNumber, PaginationDecrease, PaginationIncrease} from 'lib/paginationUtils'
 
 const {PropTypes: {string, func, number, object, bool}, Component} = React
+
+var debounce = function(func, threshold, execAsap) {
+  var timeout
+
+  return function debounced() {
+    var _this = this
+    var args = arguments
+    function delayed() {
+      if (!execAsap)
+          func.apply(_this, args)
+      timeout = null
+    }
+
+    if (timeout)
+        clearTimeout(timeout)
+    else if (execAsap)
+        func.apply(_this, args)
+
+    timeout = setTimeout(delayed, threshold || 100)
+  }
+}
 
 class TableController extends Component {
 
@@ -54,11 +75,52 @@ class GenericTable extends React.Component {
 
   }
 
+  constructor() {
+    super()
+    this.errorMap = new WeakMap()
+  }
+
   state = {
     selectedRow:null,
     newRow:null,
     error:false,
-    loading: true
+    loading: true,
+    filter: {}
+  }
+
+  handleValidateCell(evaluation, colId) {
+    let currentObj = this.props.store.getAll()[this.state.selectedRow]
+    let objErrors = this.errorMap.get(currentObj)
+    if (!objErrors) {
+      objErrors = {}
+      this.errorMap.set(currentObj, objErrors)
+    }
+
+    objErrors[colId] = evaluation
+    this.forceUpdate()
+  }
+
+  getErrorForRow() {
+    let currentObj = this.props.store.getAll()[this.state.selectedRow]
+    let config = this.props.store.getDefinition()
+    let errors = this.errorMap.get(currentObj)
+    if (!errors) return []
+    return toArray.call(config, [errors])[0]
+  }
+
+  onFilterChange(value) {
+    let config = this.props.store.getDefinition()
+    let filter
+    if (value != null && value != '') {
+      this.setState({
+        filter: getSearchFilter.call(config, value)
+      })
+    } else {
+      //Reset filter
+      this.setState({
+        filter: {}
+      })
+    }
   }
 
   onError() {
@@ -224,10 +286,13 @@ class GenericTable extends React.Component {
     let perPage = this.props.store.getMaxResultsPerPage()
     let isError = this.state.error
     let isLoading = this.state.loading
+    let filter = this.state.filter
     let fetchCountAndItems = this.fetchCountAndItems
     return (
       <div style={{marginLeft:'50px', marginTop:'50px'}} >
         <FiltersComponent
+          filter= {filter}
+          onFilterChange={this.onFilterChange}
           store={this.props.store}
           actions={this.props.actions}
           width={width}
@@ -247,13 +312,16 @@ class GenericTable extends React.Component {
           onCancelAddNewRow={this.onCancelAddNewRow}
           onSave={this.onSave}
           onCreate={this.onCreate}
-          perPage={perPage}/>
+          perPage={perPage}
+          onValidateCell={this.handleValidateCell.bind(this)}
+          errorGetter={this.getErrorForRow.bind(this)}/>
         <FooterComponent
           isLoading={isLoading}
           isError={isError}
           perPage={perPage}
           addRowFunc={this.onAddNewRow}
-          width={width} />
+          width={width}
+          errorMap={this.errorMap}/>
       </div>
     )
   }
@@ -268,7 +336,14 @@ class FiltersComponent extends React.Component {
     fetchItemsByPage: func,
     fetchCountAndItems: func,
     loading: bool,
-    error:bool
+    error:bool,
+    filter: object,
+    onFilterChange: func
+  }
+
+  constructor(props) {
+    super()
+    this.debouncedFilterChange = debounce(props.onFilterChange, 150)
   }
 
   state = {
@@ -276,27 +351,29 @@ class FiltersComponent extends React.Component {
   }
 
   onFilter() {
-    let searchVal = this.refs.searchText.getDOMNode().value
-    let config = this.props.store.getDefinition()
-    let fieldsArray
-    let payload
-    if (searchVal != null && searchVal != '') {
-      fieldsArray = getSearchableColumns.call(config)
-      payload = this.arrayToCustomObj(fieldsArray, searchVal)
-      this.props.fetchCountAndItems(0, payload)
+    this.props.fetchCountAndItems(0, this.props.filter)
+  }
+
+  handleKeyDown(e) {
+    if (e.keyCode == 13)
+    {
+      e.preventDefault()
+      this.props.fetchCountAndItems(0, this.props.filter)
     }
   }
 
-  arrayToCustomObj(array, value) {
-    let obj = {}
-    array.forEach((e) => {
-      obj[e] = value
+  handleChange() {
+    this.setState({
+      searchText: this.refs.searchText.getDOMNode().value
     })
-
-    return obj
+    this.debouncedFilterChange(this.refs.searchText.getDOMNode().value)
   }
 
   handleRefresh() {
+    this.setState({
+      searchText: ''
+    })
+    this.props.onFilterChange('')
     this.props.fetchCountAndItems(0)
   }
 
@@ -311,18 +388,20 @@ class FiltersComponent extends React.Component {
     let isLoading = this.props.loading
     let isError = this.props.error
     let fetchItemsByPage = this.props.fetchItemsByPage
+    let filter = this.props.filter
+    let refreshStyle = { marginLeft: '0 !important', marginRight: '10px !important'}
     return (
       <div className='search-toolbar' style={widthStyle}>
-        <input className='search-input' type='text' ref='searchText'/>
+        <input className='search-input' type='text' ref='searchText' value={this.state.searchText} onChange={this.handleChange} onKeyDown={this.handleKeyDown}/>
         <i className='fa fa-search fa-lg' onClick={this.onFilter}></i>
         {!isLoading ?
-
-          <span className='search-results' onClick={this.handleRefresh}>
+          <span className='search-results'>
+            <i style={refreshStyle} className='fa fa-refresh fa-lg' onClick={this.handleRefresh} title='Refresh'></i>
             {isError ? <span style={{color:'red'}}><i style={{fontSize: '12px', lineHeight: '14px'}} className='fa fa-exclamation-triangle'></i> Error while retrieving information from database</span> : <span>Items Found: {count}</span>}
           </span> :
           <i className='fa fa-spinner fa-lg'></i>
         }
-        <PaginationComponent isError={isError} isLoading={isLoading} perPage={perPage} visible={5} count={count} fetchItemsByPage={fetchItemsByPage}></PaginationComponent>
+        <PaginationComponent filter={filter} isError={isError} isLoading={isLoading} perPage={perPage} visible={5} count={count} fetchItemsByPage={fetchItemsByPage}></PaginationComponent>
       </div>
     )
   }
@@ -335,7 +414,8 @@ class FooterComponent extends React.Component {
     addRowFunc: func,
     perPage: number,
     isError: bool,
-    isLoading: bool
+    isLoading: bool,
+    errorMap: object
   }
 
   handleAddRow() {
@@ -362,7 +442,8 @@ class PaginationComponent extends PureComponent {
     count: number,
     fetchItemsByPage: func,
     isLoading: bool.isRequired,
-    isError: bool.isRequired
+    isError: bool.isRequired,
+    filter: object
   }
 
   static contextTypes = {
@@ -411,7 +492,7 @@ class PaginationComponent extends PureComponent {
       //Hacer el fetch para la pagina P
       let skip = (page * this.props.perPage) - this.props.perPage
 
-      this.props.fetchItemsByPage(skip).then(() => {
+      this.props.fetchItemsByPage(skip, this.props.filter).then(() => {
         this.setState({
           pageArray: this.getElementArray()
         })
