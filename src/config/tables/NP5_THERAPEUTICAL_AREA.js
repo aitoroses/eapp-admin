@@ -31,8 +31,8 @@ var config = {
       config: {
         type: 'text',
         defaultValue: null,
-        editable: false,
-        master: ['OU', 'x.split("_")[0]'],
+        editable: true,
+        master: ['country', 'x.toUpperCase()'],
         validations: ['required', ['maxLength', 500]],
         tooltip: 'eapp.admin.tooltips.countryAuto'
       }
@@ -43,8 +43,8 @@ var config = {
       config: {
         type: 'text',
         defaultValue: null,
-        editable: false,
-        master: ['OU', 'x.split("_")[1]'],
+        editable: true,
+        master: ['division', 'x.toUpperCase()'],
         validations: ['required', ['maxLength', 500]],
         tooltip: 'eapp.admin.tooltips.divisionAuto'
       }
@@ -55,7 +55,8 @@ var config = {
       config: {
         type: 'text',
         defaultValue: null,
-        editable: true,
+        editable: false,
+        master: [null, 'toCountry(xs[2]) + "_" + xs[3].toUpperCase()'],
         validations: ['required', ['pattern', '^.+_.+$']],
         example: 'AUSTRIA_PH',
         tooltip: 'eapp.admin.tooltips.ou'

@@ -2,6 +2,7 @@ import {Table, Column} from 'fixed-data-table'
 import TableCellComponent from './TableCellComponent'
 import PureComponent from 'react-pure-render/Component'
 import validate from 'core/fieldValidations'
+import {evaluateComputedFields} from 'config/tables'
 
 class TableComponent extends PureComponent {
 
@@ -143,14 +144,16 @@ class TableComponent extends PureComponent {
   }
 
   onChange(value, col) {
-    let {key, config} = this.props.columnsDef[col]
-    let {type, validations: rules}  = config
+    let fieldsConfig = this.props.columnsDef
+    let {key, config: columnConfig} = fieldsConfig[col]
+    let {type, validations: rules}  = columnConfig
     let evaluation = validate({value, type, rules})
     this.props.onValidateCell(evaluation, key)
-    let auxSafeObject = {...this.state.safeObject}
+    let auxSafeObject = [...this.state.safeObject]
     auxSafeObject[col] = value
+    let computedFields = evaluateComputedFields(fieldsConfig, auxSafeObject)
     this.setState({
-      safeObject: auxSafeObject
+      safeObject: computedFields
     })
   }
 
