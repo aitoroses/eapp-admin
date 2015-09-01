@@ -52,7 +52,7 @@ class TableCellComponent extends React.Component {
 
   constructor(props) {
     super()
-    this.debouncedChange = debounce(props.onChange, 150)
+    this.debouncedChange = debounce(props.onChange, 60)
   }
 
   state = {

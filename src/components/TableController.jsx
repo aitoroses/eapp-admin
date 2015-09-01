@@ -7,6 +7,17 @@ import {getElementArray, PaginationNumber, PaginationDecrease, PaginationIncreas
 
 const {PropTypes: {string, func, number, object, bool}, Component} = React
 
+function mapIterator(fn, xs) {
+  let result = []
+  let i = 0
+  for (let x of xs) {
+    result = [...result, fn(x, i)]
+    i++
+  }
+
+  return result
+}
+
 var debounce = function(func, threshold, execAsap) {
   var timeout
 
@@ -77,7 +88,7 @@ class GenericTable extends React.Component {
 
   constructor() {
     super()
-    this.errorMap = new WeakMap()
+    this.errorMap = new Map()
   }
 
   state = {
@@ -100,8 +111,8 @@ class GenericTable extends React.Component {
     this.forceUpdate()
   }
 
-  getErrorForRow() {
-    let currentObj = this.props.store.getAll()[this.state.selectedRow]
+  getErrorForRow(row) {
+    let currentObj = this.props.store.getAll()[row]
     let config = this.props.store.getDefinition()
     let errors = this.errorMap.get(currentObj)
     if (!errors) return []
@@ -194,6 +205,7 @@ class GenericTable extends React.Component {
       selectedRow: null,
       newRow:null
     })}.bind(this))
+    this.errorMap.clear()
   }
 
   onEnterEditMode(row) {
@@ -211,6 +223,7 @@ class GenericTable extends React.Component {
       selectedRow: null,
       newRow: null
     })
+    this.errorMap.clear()
   }
 
   getTransformedData() {
@@ -314,7 +327,8 @@ class GenericTable extends React.Component {
           onCreate={this.onCreate}
           perPage={perPage}
           onValidateCell={this.handleValidateCell.bind(this)}
-          errorGetter={this.getErrorForRow.bind(this)}/>
+          errorGetter={this.getErrorForRow.bind(this)}
+          errorMap={this.errorMap}/>
         <FooterComponent
           isLoading={isLoading}
           isError={isError}
@@ -422,14 +436,34 @@ class FooterComponent extends React.Component {
     this.props.addRowFunc()
   }
 
+  renderErrors() {
+    return (
+      <div style={{color: 'red', fontWeight: 'bold'}}>
+      {mapIterator((value, i) => {
+        return (Object.keys(value).map((key) => {
+          let errors = value[key].errors
+          if (errors) {
+            return errors.map((e, j) =>
+              <div
+                key={i + '_' + j}>
+                Error in column {key} -> {e.errorId}
+              </div>)
+          }
+        }))
+      }, this.props.errorMap.values())}
+      </div>
+    )
+  }
+
   render() {
-    let widthStyle = {width: this.props.width} || {width: '0px'}
+    let widthStyle = {width: this.props.width} || {width: 0}
     let itemsCount = this.props.perPage || '...'
     this.props.isError || this.props.isLoading ? widthStyle.display = 'none' : widthStyle.display = 'block'
     return (
       <div className='footer-toolbar' style={widthStyle}>
-        <div style={{float:'left'}}>Items per Page: {itemsCount}</div>
-        <div style={{float:'right'}}><button onClick={this.handleAddRow}><i className='fa fa-plus'></i> Add</button></div>
+        <div style={{marginBottom: 10}}>Items per Page: {itemsCount}</div>
+        <div style={{position: 'absolute', right: 0, top: 0}}><button onClick={this.handleAddRow}><i className='fa fa-plus'></i> Add</button></div>
+        {this.props.errorMap.size > 0 ? this.renderErrors() : null}
       </div>
     )
   }

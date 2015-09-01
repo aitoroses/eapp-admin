@@ -19,7 +19,8 @@ class TableComponent extends PureComponent {
     onCreate: React.PropTypes.func.isRequired,
     perPage: React.PropTypes.number.isRequired,
     onValidateCell: React.PropTypes.func.isRequired,
-    errorGetter: React.PropTypes.func.isRequired
+    errorGetter: React.PropTypes.func.isRequired,
+    errorMap: React.PropTypes.object
   }
 
   componentWillReceiveProps(nextProps) {
@@ -42,7 +43,8 @@ class TableComponent extends PureComponent {
   getRenderer(columnDef, value, column, colData, row) {
     let isEditing = (this.props.selectedRow == row || this.props.newRow == row)
     let val = isEditing ? this.state.safeObject[column] : value
-    let errors = this.props.errorGetter()[column]
+    let errors =  this.props.errorGetter(row) || []
+    let errorCol = errors[column]
     return <TableCellComponent
               key={row + '-' + column}
               isEditing={isEditing}
@@ -51,19 +53,27 @@ class TableComponent extends PureComponent {
               onChange={this.onChange}
               row={row}
               column={column}
-              errors={errors}
+              errors={errorCol}
             />
   }
 
   getRenderForStepActions(value, column, colData, row) {
+    let hasErrors = false
+    this.props.errorMap.forEach(function(value) {
+      Object.keys(value).forEach(function(key) {
+        if (!value[key].valid) hasErrors = true
+      })
+    })
+
+    let style = hasErrors ? {opacity: 0.3} : {opacity: 1}
     if (this.props.selectedRow == row) {
       if (this.props.newRow == null) {
         return React.addons.createFragment({
-          cellData: <div><span onClick={this.handleSave.bind(this)} className='fa fa-floppy-o fa-2x'></span><span className='fa fa-trash fa-2x'></span><span onClick={()=>this.exitEditMode()} className='fa fa-undo fa-2x'></span></div>
+          cellData: <div><span style={style} onClick={hasErrors ? null : this.handleSave.bind(this)} className='fa fa-floppy-o fa-2x'></span><span className='fa fa-trash fa-2x'></span><span onClick={()=>this.exitEditMode()} className='fa fa-undo fa-2x'></span></div>
         })
       } else {
         return React.addons.createFragment({
-          cellData: <div><span onClick={this.handleCreate.bind(this)} className='fa fa-floppy-o fa-2x'></span><span onClick={()=>this.onCancelAddNewRow()} className='fa fa-trash fa-2x'></span></div>
+          cellData: <div><span style={style} onClick={hasErrors ? null : this.handleCreate.bind(this)} className='fa fa-floppy-o fa-2x'></span><span onClick={()=>this.onCancelAddNewRow()} className='fa fa-trash fa-2x'></span></div>
         })
       }
     } else {
