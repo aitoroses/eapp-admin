@@ -21,7 +21,8 @@ class TableComponent extends PureComponent {
     perPage: React.PropTypes.number.isRequired,
     onValidateCell: React.PropTypes.func.isRequired,
     errorGetter: React.PropTypes.func.isRequired,
-    errorMap: React.PropTypes.object
+    errorMap: React.PropTypes.object,
+    dependencyDataGetter: React.PropTypes.func
   }
 
   componentWillReceiveProps(nextProps) {
@@ -55,6 +56,7 @@ class TableComponent extends PureComponent {
               row={row}
               column={column}
               errors={errorCol}
+              dependencyDataGetter={this.props.dependencyDataGetter}
             />
   }
 

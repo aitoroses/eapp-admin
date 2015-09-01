@@ -47,7 +47,8 @@ class TableCellComponent extends React.Component {
     onChange: React.PropTypes.func,
     row: React.PropTypes.number,
     column: React.PropTypes.number,
-    errors: React.PropTypes.object
+    errors: React.PropTypes.object,
+    dependencyDataGetter: React.PropTypes.func
   }
 
   constructor(props) {
@@ -102,7 +103,8 @@ class TableCellComponent extends React.Component {
       onChange: this.debouncedChange,
       row: this.props.row,
       column: this.props.column,
-      errors: this.props.errors
+      errors: this.props.errors,
+      dependencyDataGetter: this.props.dependencyDataGetter
     }
 
     if (this.props.columnDef.config.type == 'date') {
@@ -121,10 +123,74 @@ class TableCellComponent extends React.Component {
       return <CheckBoxCellComponent {...props}></CheckBoxCellComponent>
     }
 
+    if (this.props.columnDef.config.type == 'dylov') {
+      return <SelectCellComponent {...props}></SelectCellComponent>
+    }
     /*
     var color = this._getCellColor()
     */
 
+  }
+}
+
+class SelectCellComponent extends React.Component {
+  static propTypes = {
+    isEditing: React.PropTypes.bool.isRequired,
+    value: React.PropTypes.string,
+    columnDef: React.PropTypes.object.isRequired,
+    onChange: React.PropTypes.func,
+    row: React.PropTypes.number,
+    column: React.PropTypes.number,
+    errors: React.PropTypes.object,
+    dependencyDataGetter: React.PropTypes.func.isRequired
+  }
+
+  state = {
+    currentValue: this.props.value
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.setState({
+      currentValue: nextProps.value
+    })
+  }
+
+  handleChange(e) {
+    this.setState({
+      currentValue: e.target.value
+    })
+    this.props.onChange(e.target.value, this.props.column)
+  }
+
+  renderSelect(props) {
+    let options = this.props.dependencyDataGetter('tas', 'taId', 'taName').map((ele, i) => <option key={i} value={ele.id}>{ele.label}</option>)
+    return (
+      <select {...props}>{options}</select>
+    )
+  }
+
+  render() {
+    var holder
+    if (this.props.isEditing) {
+      var style = {
+        padding: '5px',
+        border: 0,
+        width:'100%',
+        height:'50px'
+      }
+      let className = !this.props.errors ? 'input-editable' : this.props.errors.valid ? 'input-editable' : 'input-editable input-validation-error'
+      holder = this.renderSelect({style})
+    } else {
+      var style = {
+        border: 0,
+        padding: '5px'
+      }
+      holder = (
+        <div style={style}>{this.props.value}</div>
+      )
+    }
+
+    return holder
   }
 }
 

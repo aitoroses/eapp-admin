@@ -2,6 +2,8 @@
 var config = {
 
   tableName: 'NP5_THERAPEUTICAL_AREA',
+
+  //resolve: ['countries'],
   fields: [
     {
       label: 'TA_ID',
@@ -11,7 +13,8 @@ var config = {
         defaultValue: null,
         editable: true,
         validations: ['required', 'positive'],
-        tooltip: 'eapp.admin.tooltips.taId'
+        tooltip: 'eapp.admin.tooltips.taId',
+        searchable: true
       }
     },
     {
@@ -22,19 +25,24 @@ var config = {
         defaultValue: null,
         editable: true,
         validations: ['required',['maxLength', 500]],
-        tooltip: 'eapp.admin.tooltips.taName'
+        tooltip: 'eapp.admin.tooltips.taName',
+        searchable: true
       }
     },
     {
       label: 'COUNTRY',
       key: 'country',
       config: {
-        type: 'text',
+        dataSource: 'countries',
+        type: 'dylov',
         defaultValue: null,
         editable: true,
+        valueField: 'countryId',
+        labelField: 'countryCode',
         master: ['country', 'x.toUpperCase()'],
         validations: ['required', ['maxLength', 500]],
-        tooltip: 'eapp.admin.tooltips.countryAuto'
+        tooltip: 'eapp.admin.tooltips.countryAuto',
+        searchable: true
       }
     },
     {
@@ -46,7 +54,8 @@ var config = {
         editable: true,
         master: ['division', 'x.toUpperCase()'],
         validations: ['required', ['maxLength', 500]],
-        tooltip: 'eapp.admin.tooltips.divisionAuto'
+        tooltip: 'eapp.admin.tooltips.divisionAuto',
+        searchable: true
       }
     },
     {
@@ -59,7 +68,8 @@ var config = {
         master: [null, 'toCountry(xs[2]) + "_" + xs[3].toUpperCase()'],
         validations: ['required', ['pattern', '^.+_.+$']],
         example: 'AUSTRIA_PH',
-        tooltip: 'eapp.admin.tooltips.ou'
+        tooltip: 'eapp.admin.tooltips.ou',
+        searchable: true
       }
     },
     {
