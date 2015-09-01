@@ -3,7 +3,7 @@ import Router from 'react-router'
 
 import NotFound from './NotFound'
 import App from './AppHandler'
-import Playground from './Playground'
+import Playground from './playground'
 import ManageHandler from './ManageHandler'
 
 // Routes
