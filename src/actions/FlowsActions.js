@@ -203,36 +203,34 @@ class FlowsActions {
     }
 
     create(action, resolve) {
-    	var branch = FlowsStore.getSteps();
-    	let {index, payload} = action;
+      var branch = FlowsStore.getSteps()
+      let {index, payload} = action
 
-    	let steps = [...branch.steps];
-    	steps[index] = payload;
+      let steps = [...branch.steps]
+      steps[index] = payload
 
-    	branch.set({steps});
+      branch.set({steps})
     }
 
     update(action, resolve) {
-    	var branch = FlowsStore.getSteps();
-    	let {index, payload} = action;
+      var branch = FlowsStore.getSteps()
+      let {index, payload} = action
 
-    	let steps = [...branch.steps];
-    	steps[index] = payload;
+      let steps = [...branch.steps]
+      steps[index] = payload
 
-    	branch.set({steps});
+      branch.set({steps})
     }
 
     delete(row, resolve) {
-    	var branch = FlowsStore.getSteps();
+      var branch = FlowsStore.getSteps()
 
-    	let steps = [...branch.steps];
-    	steps.splice(row, 1);
-    	
-    	branch.set({steps});
+      let steps = [...branch.steps]
+      steps.splice(row, 1)
+
+      branch.set({steps})
     }
 
 }
 
 export var actions = FlowsStore.createActions(FlowsActions)
-
-window.actions = actions
