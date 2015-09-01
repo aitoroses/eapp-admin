@@ -2,11 +2,13 @@ import ItemsActions from 'actions/ItemsActions'
 import ItemsStore from 'stores/ItemsStore'
 import TasActions from 'actions/TasActions'
 import TasStore from 'stores/TasStore'
+import CountriesActions from 'actions/CountriesActions'
+import CountriesStore from 'stores/CountriesStore'
 var api = {
 
   countries: {
-    store: null,
-    actions: null
+    store: CountriesStore,
+    actions: CountriesActions
   },
   disclaimers: {
     store: null,

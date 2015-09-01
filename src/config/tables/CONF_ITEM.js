@@ -2,6 +2,7 @@
 var config = {
 
   tableName: 'CONF_ITEM',
+  resolve: ['tas'],
   fields: [
     {
       label: 'ITEM_ID',
@@ -95,7 +96,21 @@ var config = {
         validations: [],
         searchable: false
       }
-    }
+    }/*,
+    {
+      label:  'TA',
+      key: 'ta',
+      config: {
+        type: 'dylov',
+        dataSource: 'tas',
+        valueField: 'taId',
+        labelField: 'taName',
+        defaultValue: 0,
+        editable: true,
+        validations: [],
+        searchable: false
+      }
+    }*/
   ]
 }
 

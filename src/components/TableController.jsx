@@ -3,6 +3,7 @@ import {getNew, toObject, toArray, getSearchFilter} from 'config/tables'
 import TableComponent from './TableComponent'
 import swal from 'sweetalert'
 import PureComponent from 'react-pure-render/Component'
+import {decorate} from 'react-mixin'
 import {getElementArray, PaginationNumber, PaginationDecrease, PaginationIncrease} from 'lib/paginationUtils'
 
 const {PropTypes: {string, func, number, object, bool}, Component} = React
@@ -36,6 +37,39 @@ var debounce = function(func, threshold, execAsap) {
         func.apply(_this, args)
 
     timeout = setTimeout(delayed, threshold || 100)
+  }
+}
+
+let externalReosurceMixin = {
+  componentWillMount() {
+    this.dependantStores = {}
+    this.dependantActions = {}
+    let dependencies = this.props.store.getDefinition().resolve
+    if (dependencies) {
+      dependencies.forEach((depName) => {
+        let {store,actions} = API[depName]
+        this.dependantStores[depName] = store
+        this.dependantActions[depName] = actions
+      })
+    }
+  },
+
+  resolveDependencyData() {
+    Object.keys(this.dependantActions).forEach((key) => {
+      this.dependantActions[key].fetchAll()
+    })
+  },
+
+  getDependencyData(dataSource, valueField, labelField) {
+    return this.dependantStores[dataSource].getAll().map((ele) => {
+      return {id: ele[valueField], label: ele[labelField], source: dataSource, key: valueField}
+    })
+  },
+
+  getDependencyElement({id, key, source}) {
+    return this.dependantStores[source].getAll().filter((ele) => {
+      return ele[key] == id
+    })[0]
   }
 }
 
@@ -77,6 +111,7 @@ class AdminToolHeader extends React.Component {
   }
 }
 
+@decorate(externalReosurceMixin)
 class GenericTable extends React.Component {
 
   static propTypes = {
@@ -97,6 +132,10 @@ class GenericTable extends React.Component {
     error:false,
     loading: true,
     filter: {}
+  }
+
+  componentDidMount() {
+    this.resolveDependencyData()
   }
 
   handleValidateCell(evaluation, colId) {
@@ -284,6 +323,8 @@ class GenericTable extends React.Component {
     this.setState({
       loading: true
     })
+    this.state.newRow != null ? this.onCancelAddNewRow() : this.onExitEditMode()
+    this.removeSelectedRowStyles()
     let filters = payload ? payload : {}
     return this.fetchCount(filters)
     .then(this.fetchItemsByPage.bind(this, skip, filters))
@@ -328,7 +369,9 @@ class GenericTable extends React.Component {
           perPage={perPage}
           onValidateCell={this.handleValidateCell.bind(this)}
           errorGetter={this.getErrorForRow.bind(this)}
-          errorMap={this.errorMap}/>
+          errorMap={this.errorMap}
+          dependencyDataGetter={this.getDependencyData}
+          />
         <FooterComponent
           isLoading={isLoading}
           isError={isError}
