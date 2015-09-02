@@ -41,7 +41,8 @@ class TableCellComponent extends React.Component {
     isEditing: React.PropTypes.bool.isRequired,
     value: React.PropTypes.oneOfType([
       React.PropTypes.string,
-      React.PropTypes.number
+      React.PropTypes.number,
+      React.PropTypes.object
     ]),
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
@@ -76,7 +77,6 @@ class TableCellComponent extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-
     if (this.isEditable(this.props) != this.isEditable(nextProps)) {
       this.toggleParentClass('no-padding')
     }
@@ -122,6 +122,10 @@ class TableCellComponent extends React.Component {
 
     if (this.props.columnDef.config.type == 'checkbox') {
       return <CheckBoxCellComponent {...props}></CheckBoxCellComponent>
+    }
+
+    if (this.props.columnDef.config.type == 'delete') {
+      return <DeleteCellComponent {...props}></DeleteCellComponent>
     }
 
     if (this.props.columnDef.config.type == 'dylov') {
@@ -466,6 +470,118 @@ class CheckBoxCellComponent extends React.Component {
           disabled={true}
           type='checkbox'
           defaultValue={this.props.value}
+          style={style}
+        />
+      )
+    }
+
+    return holder
+  }
+}
+
+class DeleteCellComponent extends React.Component {
+  static propTypes = {
+    isEditing: React.PropTypes.bool.isRequired,
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.number
+    ]),
+    columnDef: React.PropTypes.object.isRequired,
+    onChange: React.PropTypes.func,
+    row: React.PropTypes.number,
+    column: React.PropTypes.number,
+    errors: React.PropTypes.object
+  }
+
+  state = {
+    currentValue: Boolean(this.props.value)
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!nextProps.isEditing && Boolean(nextProps.value)) {
+      let nodeId = 'deleteCell_' + this.props.row
+      setTimeout(function() {
+        this.findWrapperNode(this.refs[nodeId].getDOMNode(), 'add')
+      }.bind(this))
+    } else {
+      let nodeId = 'deleteCell_' + this.props.row
+      setTimeout(function() {
+        this.findWrapperNode(this.refs[nodeId].getDOMNode(), 'remove')
+      }.bind(this))
+    }
+
+    this.setState({
+      currentValue: Boolean(nextProps.value)
+    })
+  }
+
+  handleChange(e) {
+    this.setState({
+      currentValue: e.target.checked
+    })
+    let boolValue = e.target.checked ? 1 : 0
+    this.props.onChange(boolValue, this.props.column)
+  }
+
+  findWrapperNode(node, action) {
+    if (node.classList.contains('fixedDataTableRow_rowWrapper')) {
+      if (action == 'add') {
+        node.classList.add('deleted-row')
+      } else {
+        node.classList.remove('deleted-row')
+      }
+    } else {
+      this.findWrapperNode(node.parentNode, action)
+    }
+  }
+
+  componentDidMount() {
+    if (Boolean(this.props.value)) {
+      let nodeId = 'deleteCell_' + this.props.row
+      this.findWrapperNode(this.refs[nodeId].getDOMNode(), 'add')
+    }
+  }
+
+  render() {
+    var holder
+    if (this.props.isEditing) {
+      var style = {
+        width: '98%',
+        backgroundColor: 'white',
+        height: '45px',
+        paddingTop: '15px',
+        border: '0 !important'
+      }
+      if (this.props.errors) {
+        if (!this.props.errors.valid) {
+          style.backgroundColor = '#F3C9C9'
+          style.border = '2px solid #EF6C6C ! important'
+        }
+      }
+
+      holder = (
+        <div style={style}>
+          <input
+            ref={'deleteCell_' + this.props.row}
+            type='checkbox'
+            checked={this.state.currentValue}
+            onChange={this.handleChange}
+            onBlur={this.handleOnBlur}
+          />
+        </div>
+      )
+    } else {
+      var style = {
+        backgroundColor: 'rgba(0,0,0,0) !important',
+        border: 0,
+        padding: '5px'
+      }
+      holder = (
+        <input
+          ref={'deleteCell_' + this.props.row}
+          disabled={true}
+          type='checkbox'
+          checked={this.props.value}
           style={style}
         />
       )

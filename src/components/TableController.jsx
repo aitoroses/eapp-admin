@@ -278,6 +278,11 @@ class GenericTable extends React.Component {
     return toArray.call(config, this.store.getAll())
   }
 
+  isFeatureEnabled(feature) {
+    let config = this.store.getDefinition()
+    return config.allowedActions.indexOf(feature) != -1
+  }
+
   calculateColumnsWidth(columnsDef) {
     var columnCount =  columnsDef.length + 1
     var singleColumn = (this.props.width) / columnCount
@@ -342,6 +347,9 @@ class GenericTable extends React.Component {
 
   render() {
     let columnsDef = this.store.getFields()
+    let addEnabled = this.isFeatureEnabled('ADD')
+    let updateEnabled = this.isFeatureEnabled('UPDATE')
+    let deleteEnabled = this.isFeatureEnabled('DELETE')
     let data = this.getTransformedData() || []
     let columnsWidth = this.props.width == 0 ? [] : this.calculateColumnsWidth(columnsDef)
     let width = this.props.width || 0
@@ -380,11 +388,14 @@ class GenericTable extends React.Component {
           errorGetter={this.getErrorForRow.bind(this)}
           errorMap={this.errorMap}
           dependencyDataGetter={this.getDependencyData}
+          updateEnabled={updateEnabled}
+          deleteEnabled={deleteEnabled}
           />
         <FooterComponent
           isLoading={isLoading}
           isError={isError}
           perPage={perPage}
+          addEnabled={addEnabled}
           addRowFunc={this.onAddNewRow}
           width={width}
           errorMap={this.errorMap}/>
@@ -477,6 +488,7 @@ class FooterComponent extends React.Component {
 
   static propTypes = {
     width: number.isRequired,
+    addEnabled: bool.isRequired,
     addRowFunc: func,
     perPage: number,
     isError: bool,
@@ -514,7 +526,7 @@ class FooterComponent extends React.Component {
     return (
       <div className='footer-toolbar' style={widthStyle}>
         <div style={{marginBottom: 10}}>Items per Page: {itemsCount}</div>
-        <div style={{position: 'absolute', right: 0, top: 0}}><button onClick={this.handleAddRow}><i className='fa fa-plus'></i> Add</button></div>
+        {this.props.addEnabled ? <div style={{position: 'absolute', right: 0, top: 0}}><button onClick={this.handleAddRow}><i className='fa fa-plus'></i> Add</button></div> : null}
         {this.props.errorMap.size > 0 ? this.renderErrors() : null}
       </div>
     )

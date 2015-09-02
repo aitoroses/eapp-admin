@@ -3,6 +3,7 @@ var config = {
 
   tableName: 'NP5_THERAPEUTICAL_AREA',
   resolve: ['countries'],
+  allowedActions: ['ADD', 'UPDATE', 'DELETE'],
   fields: [
     {
       label: 'TA_ID',
@@ -101,8 +102,7 @@ var config = {
         format: 'MM-DD-YYYY',
         defaultValue: null,
         editable: false,
-        validations: [],
-        master: [null, 'getTime()']
+        validations: []
       }
     },
     {
@@ -141,9 +141,9 @@ var config = {
       label:  'DELETED',
       key: 'deleted',
       config: {
-        type: 'checkbox',
+        type: 'delete',
         defaultValue: 0,
-        editable: false,
+        editable: true,
         validations: []
       }
     },
