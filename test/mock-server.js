@@ -85,6 +85,19 @@ function getRest(collection, pathname, key) {
           }
         }.bind(this))
       }
+    },
+    {
+      method: 'DELETE',
+      path: '/' + pathname + '/delete',
+      reply(params, query, body) {
+        collection.remove(body, function(err, item) {
+          if (err) {
+            this.res.status(500).json(false)
+          } else {
+            this.res.json(true)
+          }
+        }.bind(this))
+      }
     }
   ]
 }

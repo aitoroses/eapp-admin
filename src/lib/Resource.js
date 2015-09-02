@@ -34,20 +34,20 @@ class Resource {
 
   create(obj, callback, reject) {
     return request.post(__config.server + `/${this._resource}/insert`)
-    .send(obj)
-    .then(({body}) => {
-      callback(body)
-    })
-    .catch(reject)
+      .send(obj)
+      .then(({body}) => {
+        callback(body)
+      })
+      .catch(reject)
   }
 
   delete(obj, callback, reject) {
-    return request.put(__config.server + `/${this._resource}/delete`)
-    .send(obj)
-    .then(({body}) => {
-      callback(body)
-    })
-    .catch(reject)
+    return request.del(__config.server + `/${this._resource}/delete`)
+      .send(obj)
+      .then(({body}) => {
+        callback(body)
+      })
+      .catch(reject)
   }
 
   update(obj, callback, reject) {

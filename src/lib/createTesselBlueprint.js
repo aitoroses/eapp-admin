@@ -105,13 +105,36 @@ var createTesselBlueprint = _.curry(function(Resource, bindKey, dataHolderKey) {
         })
       }
 
-      delete(payload, resolve, reject) {
-        var resource = new Resource()
-        resource.delete(payload, resolve).then(() => {
-          resolve(payload)
-        }).catch((e) => {
-          reject(e)
-        })
+      delete(action, resolve, reject) {
+        let {onServer, index} = action
+        let state = getStateRef()
+        let safeCollection = state[dataHolderKey]
+        let safeRef = state[dataHolderKey][index]
+
+        // Start transaction
+        let trans = state.transact()
+
+        trans[dataHolderKey] = [
+          ...trans[dataHolderKey].slice(0, index),
+          ...trans[dataHolderKey].slice(index + 1)
+        ]
+
+        // Reduce collection amount
+        trans.count -= 1
+
+        if (onServer) {
+          var resource = new Resource()
+          resource.delete(safeRef, resolve).then(() => {
+            resolve(true)
+          }).catch((e) => {
+            // Rollback changes
+            let state = getStateRef()
+            let trans = state.transact()
+            trans[dataHolderKey] = safeCollection
+            trans.count += 1
+            reject(e)
+          })
+        }
       }
 
       update(action, resolve, reject) {

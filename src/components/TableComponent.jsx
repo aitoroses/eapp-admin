@@ -18,6 +18,7 @@ class TableComponent extends PureComponent {
     columnsWidth: React.PropTypes.array.isRequired,
     onSave: React.PropTypes.func.isRequired,
     onCreate: React.PropTypes.func.isRequired,
+    onRemove: React.PropTypes.func.isRequired,
     perPage: React.PropTypes.number.isRequired,
     onValidateCell: React.PropTypes.func.isRequired,
     errorGetter: React.PropTypes.func.isRequired,
@@ -71,18 +72,35 @@ class TableComponent extends PureComponent {
     let style = hasErrors ? {opacity: 0.3} : {opacity: 1}
     if (this.props.selectedRow == row) {
       if (this.props.newRow == null) {
-        return React.addons.createFragment({
-          cellData: <div><span style={style} onClick={hasErrors ? null : this.handleSave.bind(this)} className='fa fa-floppy-o fa-2x'></span><span className='fa fa-trash fa-2x'></span><span onClick={()=>this.exitEditMode()} className='fa fa-undo fa-2x'></span></div>
-        })
+        return (
+          <div>
+            <span style={style}
+              onClick={hasErrors ? null : this.handleSave.bind(this)}
+              className='fa fa-floppy-o fa-2x'>
+            </span>
+            <span className='fa fa-trash fa-2x' onClick={this.handleRemove.bind(this, row)}></span>
+            <span onClick={()=>this.exitEditMode()} className='fa fa-undo fa-2x'></span>
+          </div>
+        )
       } else {
-        return React.addons.createFragment({
-          cellData: <div><span style={style} onClick={hasErrors ? null : this.handleCreate.bind(this)} className='fa fa-floppy-o fa-2x'></span><span onClick={()=>this.onCancelAddNewRow()} className='fa fa-trash fa-2x'></span></div>
-        })
+        return (
+          <div>
+            <span
+              style={style}
+              onClick={hasErrors ? null : this.handleCreate.bind(this)}
+              className='fa fa-floppy-o fa-2x'>
+            </span>
+            <span onClick={()=>this.onCancelAddNewRow()} className='fa fa-trash fa-2x'></span>
+          </div>
+        )
       }
     } else {
-      return React.addons.createFragment({
-        cellData: <div><span className='fa fa-pencil-square-o fa-2x' onClick={()=>this.props.onEnterEditMode(row)}></span><span className='fa fa-trash fa-2x'></span></div>
-      })
+      return (
+        <div>
+          <span className='fa fa-pencil-square-o fa-2x' onClick={()=>this.props.onEnterEditMode(row)}></span>
+          <span className='fa fa-trash fa-2x' onClick={this.handleRemove.bind(this, row)}></span>
+        </div>
+      )
     }
   }
 
@@ -92,6 +110,10 @@ class TableComponent extends PureComponent {
 
   handleCreate() {
     this.props.onCreate(this.state.safeObject, this.props.selectedRow)
+  }
+
+  handleRemove(row) {
+    this.props.onRemove(row)
   }
 
   onCancelAddNewRow(event, index, task) {

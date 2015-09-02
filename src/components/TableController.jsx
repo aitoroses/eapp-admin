@@ -209,13 +209,25 @@ class GenericTable extends React.Component {
     let config = this.store.getDefinition()
     let newObject = toObject.call(config, arrayValue)
     let action = {
-    onServer: true,
-    index:row,
-    payload: newObject
-  }
+      onServer: true,
+      index:row,
+      payload: newObject
+    }
     this.actions.update(action)
-    .then(this.onCreateUpdateSuccess)
-    .catch(this.onErrorUpdate)
+      .then(this.onCreateUpdateSuccess)
+      .catch(this.onErrorUpdate)
+  }
+
+  onRemove(targetRow) {
+    let action = {
+      onServer: true,
+      index: targetRow
+    }
+
+    this.actions.delete(action)
+      .catch(this.onErrorUpdate)
+
+    // .then(this.onCreateUpdateSuccess)
   }
 
   onAddNewRow() {
@@ -360,6 +372,8 @@ class GenericTable extends React.Component {
           onExitEditMode={this.onExitEditMode}
           onCancelAddNewRow={this.onCancelAddNewRow}
           onSave={this.onSave}
+          onRemove={this.onRemove}
+
           onCreate={this.onCreate}
           perPage={perPage}
           onValidateCell={this.handleValidateCell.bind(this)}
@@ -659,7 +673,7 @@ class PaginationDecreaseView extends React.Component {
 function renderPagination(pageArray, current, onClick) {
   function mapToComponent(el, index) {
     return (
-    el instanceof PaginationNumber ?   <PaginationNumberView key={'number_' + index} onClick={onClick} active={(current == el._value)} value={el._value}/> :
+    el instanceof PaginationNumber   ? <PaginationNumberView key={'number_' + index} onClick={onClick} active={(current == el._value)} value={el._value}/> :
     el instanceof PaginationDecrease ? <PaginationDecreaseView key={'decrease_' + index} onClick={onClick} value={el._value}/> :
     el instanceof PaginationIncrease ? <PaginationIncreaseView key={'increase_' + index} onClick={onClick} value={el._value}/ > : <div className='no-element'></div>
     )
@@ -676,10 +690,10 @@ function renderPagination(pageArray, current, onClick) {
   }
 
   return (
-  <PaginationLayoutView>
-        {pageArray.map(mapToComponent)}
-        {hasIncreaseElement(pageArray) ? null : <div style={{width:'20px', display:'inline-block'}}>{' '}</div>}
-      </PaginationLayoutView>
+    <PaginationLayoutView>
+      {pageArray.map(mapToComponent)}
+      {hasIncreaseElement(pageArray) ? null : <div style={{width:'20px', display:'inline-block'}}>{' '}</div>}
+    </PaginationLayoutView>
   )
 }
 
