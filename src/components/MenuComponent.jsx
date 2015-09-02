@@ -43,7 +43,7 @@ class MenuComponent extends React.Component {
         <div className='block'>
           <Panel className='menuIzq eapprovalmenu' header='EAPPROVAL'>
             <ul className='menu'>
-              <li><a onClick={this.toggleItem2} href='#/flows'><span className='fa fa-bars marginRight'></span>Flows<span className='rotate'>&gt</span></a>
+              <li><a onClick={this.toggleItem2} href='#/flows'><span className='fa fa-bars marginRight'></span>Flows<span className='rotate'>{'>'}</span></a>
                 <ul className={this.state.show2 ? 'block' : 'hidden'}>
                   <li><a href='#/flows'><span className='fa fa-th-list marginRight'></span>Flows</a></li>
                   <li><a href='#/fields'><span className='fa fa-check-circle-o marginRight'></span>Fields</a></li>
@@ -55,14 +55,14 @@ class MenuComponent extends React.Component {
           </Panel>
           <Panel className='menuIzq np5menu' header='NP5'>
             <ul className='menu'>
-              <li><a onClick={this.toggleItem} href='#/items'><span className='fa fa-align-left marginRight'></span>Items<span className='rotate'>&gt</span></a>
+              <li><a onClick={this.toggleItem} href='#/manage/items'><span className='fa fa-align-left marginRight'></span>Items<span className='rotate'>{'>'}</span></a>
                 <ul className={this.state.show ? 'block' : 'hidden'}>
-                  <li><a href='#/itemsPermission'><span className='fa fa-th-list marginRight'></span>Items Permission</a></li>
-                  <li><a href='#/disclaimers'><span className='fa fa-check-circle-o marginRight'></span>Disclaimers</a></li>
+                  <li><a href='#/manage/itemsPermission'><span className='fa fa-th-list marginRight'></span>Items Permission</a></li>
+                  <li><a href='#/manage/disclaimers'><span className='fa fa-check-circle-o marginRight'></span>Disclaimers</a></li>
                 </ul>
               </li>
               <li><a href='#/manage/countries'><span className='fa fa-map-marker marginRight'></span>Countries</a></li>
-              <li><a href='#/therapeuticalAreas'><span className='fa fa-th marginRight'></span>Therapeutical Areas</a></li>
+              <li><a href='#/manage/tas'><span className='fa fa-th marginRight'></span>Therapeutical Areas</a></li>
             </ul>
             </Panel>
         </div>

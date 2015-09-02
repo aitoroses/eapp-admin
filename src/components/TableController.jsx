@@ -381,7 +381,6 @@ class GenericTable extends React.Component {
           onCancelAddNewRow={this.onCancelAddNewRow}
           onSave={this.onSave}
           onRemove={this.onRemove}
-
           onCreate={this.onCreate}
           perPage={perPage}
           onValidateCell={this.handleValidateCell.bind(this)}
