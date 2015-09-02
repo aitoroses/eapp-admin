@@ -137,6 +137,18 @@ class FlowsStore {
     return this.state.createFlow.flowtas[combo].runtime
   }
 
+  getStepFromSteps() {
+    return this.state.createFlow.steps.steps.map(function(element) {
+      return element.step
+    })
+  }
+
+  getVarFromStep(step) {
+    return this.state.createFlow.steps.steps.filter(function(element) {
+      if (element.step.stepId == step) return element
+    })[0].variables
+  }
+
 }
 
 export var store = state.createStore(FlowsStore)

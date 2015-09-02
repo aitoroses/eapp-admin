@@ -189,47 +189,59 @@ class FlowsActions {
   addNew(payload, resolve) {
     var steps = FlowsStore.getSteps()
     let auxData = [...[], ...steps.steps]
-    auxData.unshift(payload)
+    let extObj = {
+      step: payload,
+      variables: []
+    }
+    auxData.unshift(extObj)
     steps.set({steps: auxData})
     resolve(auxData)
   }
 
-    cancelNew(payload, resolve) {
-      var steps = FlowsStore.getSteps()
-      let auxData = [...[], ...steps.steps]
-      auxData.shift()
-      steps.set({steps: auxData})
-      resolve(auxData)
+  cancelNew(payload, resolve) {
+    var steps = FlowsStore.getSteps()
+    let auxData = [...[], ...steps.steps]
+    auxData.shift()
+    steps.set({steps: auxData})
+    resolve(auxData)
+  }
+
+  create(action, resolve) {
+    var branch = FlowsStore.getSteps()
+    let {index, payload} = action
+
+    let steps = [...branch.steps]
+    let extObj = {
+      step: payload,
+      variables: []
     }
+    steps[index] = extObj
 
-    create(action, resolve) {
-      var branch = FlowsStore.getSteps()
-      let {index, payload} = action
+    branch.set({steps})
+  }
 
-      let steps = [...branch.steps]
-      steps[index] = payload
+  update(action, resolve) {
+    var branch = FlowsStore.getSteps()
+    let {index, payload} = action
 
-      branch.set({steps})
+    let steps = [...branch.steps]
+    let extObj = {
+      step: payload,
+      variables: []
     }
+    steps[index] = extObj
 
-    update(action, resolve) {
-      var branch = FlowsStore.getSteps()
-      let {index, payload} = action
+    branch.set({steps})
+  }
 
-      let steps = [...branch.steps]
-      steps[index] = payload
+  delete(row, resolve) {
+    var branch = FlowsStore.getSteps()
 
-      branch.set({steps})
-    }
+    let steps = [...branch.steps]
+    steps.splice(row, 1)
 
-    delete(row, resolve) {
-      var branch = FlowsStore.getSteps()
-
-      let steps = [...branch.steps]
-      steps.splice(row, 1)
-
-      branch.set({steps})
-    }
+    branch.set({steps})
+  }
 
 }
 
