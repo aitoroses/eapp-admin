@@ -4,6 +4,11 @@ import TasActions from 'actions/TasActions'
 import TasStore from 'stores/TasStore'
 import CountriesActions from 'actions/CountriesActions'
 import CountriesStore from 'stores/CountriesStore'
+import DisclaimersActions from 'actions/DisclaimersActions'
+import DisclaimersStore from 'stores/DisclaimersStore'
+import ItemsPemissionActions from 'actions/ItemsPermissionActions'
+import ItemsPermissionStore from 'stores/ItemsPermissionStore'
+
 var api = {
 
   countries: {
@@ -11,8 +16,8 @@ var api = {
     actions: CountriesActions
   },
   disclaimers: {
-    store: null,
-    actions: null
+    store: DisclaimersStore,
+    actions: DisclaimersActions
   },
   items: {
     store: ItemsStore,
@@ -23,8 +28,8 @@ var api = {
     actions: TasActions
   },
   itemsPermission: {
-    store: null,
-    actions: null
+    store: ItemsPermissionStore,
+    actions: ItemsPemissionActions
   }
 
 }
