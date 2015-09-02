@@ -1,6 +1,9 @@
 import {Route, NotFoundRoute} from 'react-router'
 import Router from 'react-router'
 
+// TODO: Investigar por que es necesaria esta llamada en primer lugar
+import API from 'core/API'
+
 import NotFound from './NotFound'
 import App from './AppHandler'
 import Playground from './playground'

@@ -2,8 +2,7 @@
 var config = {
 
   tableName: 'NP5_THERAPEUTICAL_AREA',
-
-  //resolve: ['countries'],
+  resolve: ['countries'],
   fields: [
     {
       label: 'TA_ID',
@@ -37,10 +36,10 @@ var config = {
         type: 'dylov',
         defaultValue: null,
         editable: true,
-        valueField: 'countryId',
+        valueField: 'countryCode',
         labelField: 'countryCode',
         master: ['country', 'x.toUpperCase()'],
-        validations: ['required', ['maxLength', 500]],
+        validations: ['required'],
         tooltip: 'eapp.admin.tooltips.countryAuto',
         searchable: true
       }
@@ -65,7 +64,7 @@ var config = {
         type: 'text',
         defaultValue: null,
         editable: false,
-        master: [null, 'toCountry(xs[2]) + "_" + xs[3].toUpperCase()'],
+        master: [null, 'resolveElement("countries","countryCode", xs[2]).countryName + "_" + xs[3].toUpperCase()'],
         validations: ['required', ['pattern', '^.+_.+$']],
         example: 'AUSTRIA_PH',
         tooltip: 'eapp.admin.tooltips.ou',
@@ -102,7 +101,8 @@ var config = {
         format: 'MM-DD-YYYY',
         defaultValue: null,
         editable: false,
-        validations: []
+        validations: [],
+        master: [null, 'getTime()']
       }
     },
     {
@@ -123,7 +123,8 @@ var config = {
         format: 'MM-DD-YYYY',
         defaultValue: null,
         editable: false,
-        validations: []
+        validations: [],
+        master: [null, 'getTime()']
       }
     },
     {
@@ -152,9 +153,10 @@ var config = {
       config: {
         type: 'number',
         defaultValue: null,
-        editable: true,
+        editable: false,
         validations: [],
-        tooltip: 'eapp.admin.tooltips.countryId'
+        tooltip: 'eapp.admin.tooltips.countryId',
+        master: [null, 'resolveElement("countries","countryCode",xs[2]).countryId'],
       }
     }
   ]

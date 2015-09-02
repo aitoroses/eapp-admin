@@ -4,17 +4,16 @@ import countries from './NP5_COUNTRY'
 import itemsPermission from './NP5_ITEMS_PERMISSION'
 import tas from './NP5_THERAPEUTICAL_AREA'
 import steps from './CONF_STEP'
+import API from 'core/API'
 
-const countryCodes = {
-  KR: 'SOUTHKOREA',
-  FR: 'FRANCE',
-  AT: 'AUSTRIA',
-  DE: 'GERMANY',
-  ES: 'SPAIN'
+function resolveElement(source, key, value) {
+  return API[source].store.getAll().filter((ele) => {
+    return ele[key] == value
+  })[0]
 }
 
-function toCountry(code) {
-  return countryCodes[code.toUpperCase()]  ? countryCodes[code.toUpperCase()] : 'NON_EXISTING_COUNTRY'
+function getTime() {
+  return new Date()
 }
 
 export function getFromFieldArrayByKey(fieldsConfig, key, fieldsArray) {
@@ -37,7 +36,8 @@ export function evaluateComputedFields(fieldsConfig, fields /*array form*/) {
         try {
 
           // Create context for eval
-          window.toCountry = toCountry
+          window.resolveElement = resolveElement
+          window.getTime = getTime
 
           // Eval computing function
           evalString = 'function evalFn (x, xs) { return ' + evalString + '}'
@@ -51,7 +51,8 @@ export function evaluateComputedFields(fieldsConfig, fields /*array form*/) {
       })()
 
       // Remove context
-      delete window.toCountry
+      delete window.resolveElement
+      delete window.getTime
 
       return result || ''
 

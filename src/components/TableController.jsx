@@ -56,7 +56,7 @@ let externalReosurceMixin = {
 
   resolveDependencyData() {
     Object.keys(this.dependantActions).forEach((key) => {
-      this.dependantActions[key].fetchAll()
+      this.dependantActions[key].fetchAll({})
     })
   },
 

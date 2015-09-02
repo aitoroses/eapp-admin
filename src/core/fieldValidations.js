@@ -42,10 +42,15 @@ var validationRules = {
     }
   },
   checkbox: {
-
   },
-  lov: {
-
+  dylov: {
+    required: {
+      errorId: 'eapp.admin.errors.dylov.required',
+      label: '',
+      validate: function(x) {
+        return x != null && x != ''
+      }
+    }
   }
 }
 

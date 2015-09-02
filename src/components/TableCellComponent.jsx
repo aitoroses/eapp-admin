@@ -116,6 +116,7 @@ class TableCellComponent extends React.Component {
     }
 
     if (this.props.columnDef.config.type == 'number') {
+      if (typeof (props.value) == 'string' && props.value == '') props.value = null
       return <NumberCellComponent {...props}></NumberCellComponent>
     }
 
@@ -163,9 +164,18 @@ class SelectCellComponent extends React.Component {
   }
 
   renderSelect(props) {
-    let options = this.props.dependencyDataGetter('tas', 'taId', 'taName').map((ele, i) => <option key={i} value={ele.id}>{ele.label}</option>)
+    let className = !this.props.errors ? 'input-editable' : this.props.errors.valid ? 'input-editable' : 'input-editable input-validation-error'
+    let options = this.props.dependencyDataGetter(
+      this.props.columnDef.config.dataSource,
+      this.props.columnDef.config.valueField,
+      this.props.columnDef.config.labelField).map((ele, i) => <option key={i} value={ele.id}>{ele.label}</option>)
+
+    if (!this.state.currentValue) {
+      options = [<option key={'null'} value={null}>-- Select --</option>, ...options]
+    }
+
     return (
-      <select {...props}>{options}</select>
+      <select value={this.state.currentValue} onChange={this.handleChange} className={className} {...props}>{options}</select>
     )
   }
 
@@ -178,7 +188,7 @@ class SelectCellComponent extends React.Component {
         width:'100%',
         height:'50px'
       }
-      let className = !this.props.errors ? 'input-editable' : this.props.errors.valid ? 'input-editable' : 'input-editable input-validation-error'
+
       holder = this.renderSelect({style})
     } else {
       var style = {
@@ -321,7 +331,10 @@ class TextCellComponent extends React.Component {
 class NumberCellComponent extends React.Component {
   static propTypes = {
     isEditing: React.PropTypes.bool.isRequired,
-    value: React.PropTypes.number,
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.number
+    ]),
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
     row: React.PropTypes.number,
@@ -330,12 +343,12 @@ class NumberCellComponent extends React.Component {
   }
 
   state = {
-    currentValue: this.props.value
+    currentValue: parseInt(this.props.value)
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      currentValue: nextProps.value
+      currentValue: parseInt(nextProps.value)
     })
   }
 
@@ -384,7 +397,10 @@ class NumberCellComponent extends React.Component {
 class CheckBoxCellComponent extends React.Component {
   static propTypes = {
     isEditing: React.PropTypes.bool.isRequired,
-    value: React.PropTypes.number,
+    value: React.PropTypes.oneOfType([
+      React.PropTypes.string,
+      React.PropTypes.number
+    ]),
     columnDef: React.PropTypes.object.isRequired,
     onChange: React.PropTypes.func,
     row: React.PropTypes.number,
@@ -393,20 +409,21 @@ class CheckBoxCellComponent extends React.Component {
   }
 
   state = {
-    currentValue: this.props.value
+    currentValue: Boolean(this.props.value)
   }
 
   componentWillReceiveProps(nextProps) {
     this.setState({
-      currentValue: nextProps.value
+      currentValue: Boolean(nextProps.value)
     })
   }
 
   handleChange(e) {
     this.setState({
-      currentValue: e.target.value
+      currentValue: e.target.checked
     })
-    this.props.onChange(e.target.value, this.props.column)
+    let boolValue = e.target.checked ? 1 : 0
+    this.props.onChange(boolValue, this.props.column)
   }
 
   render() {
