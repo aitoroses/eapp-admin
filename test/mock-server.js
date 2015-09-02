@@ -2,6 +2,9 @@ var Nocker = require('nocker')
 
 var itemsCollection = require('./mock-db/items')
 var tasCollection = require('./mock-db/tas')
+var disclaimersCollection = require('./mock-db/disclaimers')
+var countriesCollection = require('./mock-db/countries')
+var itemsPermissionCollection = require('./mock-db/itemsPermission')
 
 function delay(res, result, amount) {
   setTimeout(function() {
@@ -86,8 +89,12 @@ function getRest(collection, pathname, key) {
   ]
 }
 
+// Load collection routes
 Nocker.register(getRest(itemsCollection, 'eappservices/flowstepitem/confitem', 'itemId'))
 Nocker.register(getRest(tasCollection, 'np5services/countryandta/np5therapeuticalarea', 'taId'))
+Nocker.register(getRest(disclaimersCollection, 'np5services/items/np5confdisclaimer', 'itemId'))
+Nocker.register(getRest(countriesCollection, 'np5services/countryandta/np5country', 'countryId'))
+Nocker.register(getRest(itemsPermissionCollection, 'np5services/items/np5itemspermission', 'itemId'))
 
 Nocker.start({port: 7003}, function() {
   console.log('Listening on port 7003')

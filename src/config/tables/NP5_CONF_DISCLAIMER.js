@@ -5,6 +5,7 @@ var config = {
   fields: [
     {
       label: 'ITEM_ID',
+      key: 'itemId',
       config: {
         type: 'number',
         defaultValue: null,
@@ -15,6 +16,7 @@ var config = {
     },
     {
       label: 'ORGANIZATIONAL_UNIT',
+      key: 'organizationalUnit',
       config: {
         type: 'text',
         defaultValue: null,
@@ -24,7 +26,8 @@ var config = {
       }
     },
     {
-      label:  'DISCLAIMER',
+      label: 'DISCLAIMER',
+      key: 'disclaimer',
       config: {
         type: 'text',
         defaultValue: 'NA',
@@ -34,7 +37,8 @@ var config = {
       }
     },
     {
-      label:  'DATE_CREATION',
+      label: 'DATE_CREATION',
+      key: 'dateCreation',
       config: {
         type: 'date',
         format: 'MM-DD-YYYY',
@@ -44,7 +48,8 @@ var config = {
       }
     },
     {
-      label:  'USER_CREATION',
+      label: 'USER_CREATION',
+      key: 'userCreation',
       config: {
         type: 'text',
         defaultValue: null,
@@ -53,7 +58,8 @@ var config = {
       }
     },
     {
-      label:  'DATE_MODIFIED',
+      label: 'DATE_MODIFIED',
+      key: 'dateModified',
       config: {
         type: 'date',
         format: 'MM-DD-YYYY',
@@ -63,7 +69,8 @@ var config = {
       }
     },
     {
-      label:  'USER_MODIFIED',
+      label: 'USER_MODIFIED',
+      key: 'userModified',
       config: {
         type: 'text',
         defaultValue: null,
@@ -72,7 +79,8 @@ var config = {
       }
     },
     {
-      label:  'DELETED',
+      label: 'DELETED',
+      key: 'deleted',
       config: {
         type: 'checkbox',
         defaultValue: 0,

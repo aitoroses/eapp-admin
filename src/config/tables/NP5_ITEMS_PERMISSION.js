@@ -5,6 +5,7 @@ var config = {
   fields: [
     {
       label: 'ITEM_ID',
+      key: 'itemId',
       config: {
         type: 'number',
         defaultValue: null,
@@ -15,6 +16,7 @@ var config = {
     },
     {
       label: 'COUNTRY',
+      country: 'country',
       config: {
         type: 'text',
         defaultValue: null,
@@ -25,7 +27,8 @@ var config = {
       }
     },
     {
-      label:  'DIVISION',
+      label: 'DIVISION',
+      key: 'division',
       config: {
         type: 'text',
         defaultValue: null,
@@ -37,6 +40,7 @@ var config = {
     },
     {
       label:  'OU',
+      key: 'ou',
       config: {
         type: 'text',
         defaultValue: null,
@@ -48,6 +52,7 @@ var config = {
     },
     {
       label:  'BUSINESS_ROLE',
+      key: 'businessRole',
       config: {
         type: 'text',
         defaultValue: 0,
@@ -58,6 +63,7 @@ var config = {
     },
     {
       label:  'IS_FOR_MEDICAL',
+      key: 'isForMedical',
       config: {
         type: 'checkbox',
         defaultValue: 0,
@@ -68,6 +74,7 @@ var config = {
     },
     {
       label:  'IS_FOR_MARKETING',
+      key: 'isForMarketing',
       config: {
         type: 'checkbox',
         defaultValue: 0,
@@ -78,6 +85,7 @@ var config = {
     },
     {
       label:  'IS_FOR_SALES',
+      key: 'isForSales',
       config: {
         type: 'checkbox',
         defaultValue: 0,
@@ -87,7 +95,8 @@ var config = {
       }
     },
     {
-      label:  'EVERYBODY',
+      label: 'EVERYBODY',
+      key: 'everybody',
       config: {
         type: 'checkbox',
         defaultValue: 1,
@@ -97,7 +106,8 @@ var config = {
       }
     },
     {
-      label:  'DATE_CREATION',
+      label: 'DATE_CREATION',
+      key: 'dateCreation',
       config: {
         type: 'date',
         format: 'MM-DD-YYYY',
@@ -108,6 +118,7 @@ var config = {
     },
     {
       label:  'USER_CREATION',
+      key: 'userCreation',
       config: {
         type: 'text',
         defaultValue: null,
@@ -117,6 +128,7 @@ var config = {
     },
     {
       label:  'DATE_MODIFIED',
+      key: 'dateModified',
       config: {
         type: 'date',
         format: 'MM-DD-YYYY',
@@ -127,6 +139,7 @@ var config = {
     },
     {
       label:  'USER_MODIFIED',
+      key: 'userModified',
       config: {
         type: 'text',
         defaultValue: null,
@@ -136,6 +149,7 @@ var config = {
     },
     {
       label:  'DELETED',
+      key: 'deleted',
       config: {
         type: 'checkbox',
         defaultValue: 0,
