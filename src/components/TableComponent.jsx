@@ -22,7 +22,9 @@ class TableComponent extends PureComponent {
     onValidateCell: React.PropTypes.func.isRequired,
     errorGetter: React.PropTypes.func.isRequired,
     errorMap: React.PropTypes.object,
-    dependencyDataGetter: React.PropTypes.func
+    dependencyDataGetter: React.PropTypes.func,
+    updateEnabled: React.PropTypes.bool.isRequired,
+    deleteEnabled: React.PropTypes.bool.isRequired
   }
 
   componentWillReceiveProps(nextProps) {
@@ -72,16 +74,25 @@ class TableComponent extends PureComponent {
     if (this.props.selectedRow == row) {
       if (this.props.newRow == null) {
         return React.addons.createFragment({
-          cellData: <div><span style={style} onClick={hasErrors ? null : this.handleSave.bind(this)} className='fa fa-floppy-o fa-2x'></span><span className='fa fa-trash fa-2x'></span><span onClick={()=>this.exitEditMode()} className='fa fa-undo fa-2x'></span></div>
+          cellData: (
+            <div>
+              <span style={style} onClick={hasErrors ? null : this.handleSave.bind(this)} className='fa fa-floppy-o fa-2x'></span>
+              {this.props.deleteEnabled ? <span className='fa fa-trash fa-2x'></span> : null}
+              <span onClick={()=>this.exitEditMode()} className='fa fa-undo fa-2x'></span>
+            </div>)
         })
       } else {
         return React.addons.createFragment({
-          cellData: <div><span style={style} onClick={hasErrors ? null : this.handleCreate.bind(this)} className='fa fa-floppy-o fa-2x'></span><span onClick={()=>this.onCancelAddNewRow()} className='fa fa-trash fa-2x'></span></div>
+          cellData: <div><span style={style} onClick={hasErrors ? null : this.handleCreate.bind(this)} className='fa fa-floppy-o fa-2x'></span><span onClick={()=>this.onCancelAddNewRow()} className='fa fa-undo fa-2x'></span></div>
         })
       }
     } else {
       return React.addons.createFragment({
-        cellData: <div><span className='fa fa-pencil-square-o fa-2x' onClick={()=>this.props.onEnterEditMode(row)}></span><span className='fa fa-trash fa-2x'></span></div>
+        cellData: (
+          <div>
+            {this.props.updateEnabled ? <span className='fa fa-pencil-square-o fa-2x' onClick={()=>this.props.onEnterEditMode(row)}></span> : null}
+            {this.props.deleteEnabled ? <span className='fa fa-trash fa-2x'></span> : null }
+          </div>)
       })
     }
   }

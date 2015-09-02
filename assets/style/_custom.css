@@ -2,6 +2,18 @@
 	padding:0 !important;
 }
 
+
+.deleted-row:after  {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  height: 1px;
+  background: #F5BEBE;
+  content: "";
+  width: 100%;
+  display: block;
+}
+
 .input-validation-error {
     background-color: #F3C9C9;
     border: 2px solid #EF6C6C ! important;

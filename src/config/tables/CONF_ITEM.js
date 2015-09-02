@@ -2,6 +2,7 @@
 var config = {
 
   tableName: 'CONF_ITEM',
+  allowedActions: ['ADD', 'UPDATE', 'DELETE'],
   fields: [
     {
       label: 'ITEM_ID',
@@ -71,7 +72,8 @@ var config = {
         defaultValue: null,
         editable: false,
         validations: [],
-        searchable: false
+        searchable: false,
+        master: [null, 'getTime()']
       }
     },
     {
@@ -89,9 +91,9 @@ var config = {
       label:  'DELETED',
       key: 'deleted',
       config: {
-        type: 'checkbox',
+        type: 'delete',
         defaultValue: 0,
-        editable: false,
+        editable: true,
         validations: [],
         searchable: false
       }
