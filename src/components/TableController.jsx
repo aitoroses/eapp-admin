@@ -1,4 +1,3 @@
-import API from 'core/API'
 import {getNew, toObject, toArray, getSearchFilter} from 'config/tables'
 import TableComponent from './TableComponent'
 import swal from 'sweetalert'
@@ -44,10 +43,10 @@ let externalReosurceMixin = {
   componentWillMount() {
     this.dependantStores = {}
     this.dependantActions = {}
-    let dependencies = this.props.store.getDefinition().resolve
+    let dependencies = this.store.getDefinition().resolve
     if (dependencies) {
       dependencies.forEach((depName) => {
-        let {store,actions} = API[depName]
+        let {store,actions} = this.props.api[depName]
         this.dependantStores[depName] = store
         this.dependantActions[depName] = actions
       })
@@ -76,22 +75,16 @@ let externalReosurceMixin = {
 class TableController extends Component {
 
   static propTypes = {
+    api: object.isRequired,
     table: string.isRequired,
     width: number.isRequired
-  }
-
-  constructor(props) {
-    super()
-    var {store,actions} = API[props.table]
-    this.store = store
-    this.actions = actions
   }
 
   render() {
     return (
       <div>
-        <AdminToolHeader>{this.store.getTableName() + ' Table Administration'}</AdminToolHeader>
-        <GenericTable width={this.props.width} store={this.store} actions={this.actions}></GenericTable>
+        <AdminToolHeader>{this.props.api[this.props.table].store.getTableName() + ' Table Administration'}</AdminToolHeader>
+        <GenericTable api={this.props.api} width={this.props.width} table={this.props.table}></GenericTable>
       </div>
 
     )
@@ -115,15 +108,18 @@ class AdminToolHeader extends React.Component {
 class GenericTable extends React.Component {
 
   static propTypes = {
-    store: object.isRequired,
-    actions: object.isRequired,
+    api: object.isRequired,
+    table: string.isRequired,
     width: number.isRequired
 
   }
 
-  constructor() {
+  constructor(props) {
     super()
     this.errorMap = new Map()
+    var {store,actions} = props.api[props.table]
+    this.store = store
+    this.actions = actions
   }
 
   state = {
@@ -139,7 +135,7 @@ class GenericTable extends React.Component {
   }
 
   handleValidateCell(evaluation, colId) {
-    let currentObj = this.props.store.getAll()[this.state.selectedRow]
+    let currentObj = this.store.getAll()[this.state.selectedRow]
     let objErrors = this.errorMap.get(currentObj)
     if (!objErrors) {
       objErrors = {}
@@ -151,15 +147,15 @@ class GenericTable extends React.Component {
   }
 
   getErrorForRow(row) {
-    let currentObj = this.props.store.getAll()[row]
-    let config = this.props.store.getDefinition()
+    let currentObj = this.store.getAll()[row]
+    let config = this.store.getDefinition()
     let errors = this.errorMap.get(currentObj)
     if (!errors) return []
     return toArray.call(config, [errors])[0]
   }
 
   onFilterChange(value) {
-    let config = this.props.store.getDefinition()
+    let config = this.store.getDefinition()
     let filter
     if (value != null && value != '') {
       this.setState({
@@ -197,27 +193,27 @@ class GenericTable extends React.Component {
   }
 
   onCreate(arrayValue, row) {
-    let config = this.props.store.getDefinition()
+    let config = this.store.getDefinition()
     let newObject = toObject.call(config, arrayValue)
     let action = {
     onServer: true,
     index:row,
     payload: newObject
   }
-    this.props.actions.create(action)
+    this.actions.create(action)
     .then(this.onCreateUpdateSuccess)
     .catch(this.onErrorUpdate)
   }
 
   onSave(arrayValue, row) {
-    let config = this.props.store.getDefinition()
+    let config = this.store.getDefinition()
     let newObject = toObject.call(config, arrayValue)
     let action = {
     onServer: true,
     index:row,
     payload: newObject
   }
-    this.props.actions.update(action)
+    this.actions.update(action)
     .then(this.onCreateUpdateSuccess)
     .catch(this.onErrorUpdate)
   }
@@ -226,9 +222,9 @@ class GenericTable extends React.Component {
     if (this.state.selectedRow != null || this.state.newRow != null) {
       swal('', 'You are already editing a row. Please save or discard changes.')
     } else {
-      let config = this.props.store.getDefinition()
+      let config = this.store.getDefinition()
       let newObj = getNew.call(config)
-      this.props.actions.addNew(newObj)
+      this.actions.addNew(newObj)
       setTimeout(function() {
         this.setState({
         newRow:0,
@@ -238,7 +234,7 @@ class GenericTable extends React.Component {
   }
 
   onCancelAddNewRow() {
-    this.props.actions.cancelNew()
+    this.actions.cancelNew()
     setTimeout(function() {
       this.setState({
       selectedRow: null,
@@ -266,8 +262,8 @@ class GenericTable extends React.Component {
   }
 
   getTransformedData() {
-    let config = this.props.store.getDefinition()
-    return toArray.call(config, this.props.store.getAll())
+    let config = this.store.getDefinition()
+    return toArray.call(config, this.store.getAll())
   }
 
   calculateColumnsWidth(columnsDef) {
@@ -310,13 +306,13 @@ class GenericTable extends React.Component {
     let query = {
     payload: filters ? filters : {},
     skip: skip,
-    limit: this.props.store.getMaxResultsPerPage()
+    limit: this.store.getMaxResultsPerPage()
   }
-    return this.props.actions.fetchByPage(query)
+    return this.actions.fetchByPage(query)
   }
 
   fetchCount(filters) {
-    return this.props.actions.fetchCount(filters)
+    return this.actions.fetchCount(filters)
   }
 
   fetchCountAndItems(skip, payload) {
@@ -333,11 +329,11 @@ class GenericTable extends React.Component {
   }
 
   render() {
-    let columnsDef = this.props.store.getFields()
+    let columnsDef = this.store.getFields()
     let data = this.getTransformedData() || []
     let columnsWidth = this.props.width == 0 ? [] : this.calculateColumnsWidth(columnsDef)
     let width = this.props.width || 0
-    let perPage = this.props.store.getMaxResultsPerPage()
+    let perPage = this.store.getMaxResultsPerPage()
     let isError = this.state.error
     let isLoading = this.state.loading
     let filter = this.state.filter
@@ -347,8 +343,7 @@ class GenericTable extends React.Component {
         <FiltersComponent
           filter= {filter}
           onFilterChange={this.onFilterChange}
-          store={this.props.store}
-          actions={this.props.actions}
+          store={this.store}
           width={width}
           loading={isLoading}
           error={isError}
