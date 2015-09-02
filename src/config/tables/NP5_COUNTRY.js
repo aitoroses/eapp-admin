@@ -5,6 +5,7 @@ var config = {
   fields: [
     {
       label: 'COUNTRY_ID',
+      key: 'countryId',
       config: {
         type: 'number',
         defaultValue: null,
@@ -15,6 +16,7 @@ var config = {
     },
     {
       label: 'COUNTRY_CODE',
+      key: 'countryCode',
       config: {
         type: 'text',
         defaultValue: null,
@@ -26,6 +28,7 @@ var config = {
     },
     {
       label:  'COUNTRY_NAME',
+      key: 'countryName',
       config: {
         type: 'text',
         defaultValue: null,
@@ -36,6 +39,7 @@ var config = {
     },
     {
       label:  'DATE_CREATION',
+      key: 'dateCreation',
       config: {
         type: 'date',
         format: 'MM-DD-YYYY',
@@ -46,6 +50,7 @@ var config = {
     },
     {
       label:  'USER_CREATION',
+      key: 'userCreation',
       config: {
         type: 'text',
         defaultValue: null,
@@ -55,6 +60,7 @@ var config = {
     },
     {
       label:  'DATE_MODIFIED',
+      key: 'dateModified',
       config: {
         type: 'date',
         format: 'MM-DD-YYYY',
@@ -65,6 +71,7 @@ var config = {
     },
     {
       label:  'USER_MODIFIED',
+      key: 'userModified',
       config: {
         type: 'text',
         defaultValue: null,
@@ -74,6 +81,7 @@ var config = {
     },
     {
       label:  'DELETED',
+      key: 'deleted',
       config: {
         type: 'checkbox',
         defaultValue: 0,
@@ -83,6 +91,7 @@ var config = {
     },
     {
       label:  'COUNTRY_SAP_CODE',
+      key: 'countrySapCode',
       config: {
         type: 'text',
         defaultValue: null,
@@ -93,6 +102,7 @@ var config = {
     },
     {
       label:  'COUNTRY_SHORT',
+      key: 'countryShort',
       config: {
         type: 'text',
         defaultValue: 0,
