@@ -2,6 +2,7 @@
 var config = {
 
   tableName: 'NP5_COUNTRY',
+  allowedActions: ['ADD', 'UPDATE', 'DELETE'],
   fields: [
     {
       label: 'COUNTRY_ID',
