@@ -130,6 +130,16 @@ class GenericTable extends React.Component {
     filter: {}
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.table != this.props.table) {
+      this.errorMap = new Map()
+      var {store,actions} = nextProps.api[nextProps.table]
+      this.store = store
+      this.actions = actions
+      this.fetchCountAndItems(0, {})
+    }
+  }
+
   componentDidMount() {
     this.resolveDependencyData()
   }
@@ -219,13 +229,25 @@ class GenericTable extends React.Component {
   }
 
   onRemove(targetRow) {
-    let action = {
-      onServer: true,
-      index: targetRow
-    }
 
-    this.actions.delete(action)
-      .catch(this.onErrorUpdate)
+    swal({
+      title: 'Are you sure you want to delete the row?',
+      text: 'You will not be able to recover the record',
+      type: 'warning',
+       showCancelButton: true,
+       confirmButtonColor: '#DD6B55',
+       confirmButtonText: 'Confirm',
+       closeOnConfirm: true },
+       function() {
+         let action = {
+           onServer: true,
+           index: targetRow
+         }
+
+         this.actions.delete(action)
+           .catch(this.onErrorUpdate)
+
+       }.bind(this))
 
     // .then(this.onCreateUpdateSuccess)
   }

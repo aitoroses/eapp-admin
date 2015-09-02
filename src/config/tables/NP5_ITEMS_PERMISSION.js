@@ -2,6 +2,7 @@
 var config = {
 
   tableName: 'NP5_ITEMS_PERMISSION',
+  allowedActions: ['ADD', 'UPDATE', 'DELETE'],
   fields: [
     {
       label: 'ITEM_ID',

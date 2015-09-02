@@ -2,6 +2,7 @@
 var config = {
 
   tableName: 'NP5_CONF_DISCLAIMER',
+  allowedActions: ['ADD', 'UPDATE', 'DELETE'],
   fields: [
     {
       label: 'ITEM_ID',
