@@ -20,6 +20,11 @@ class FlowStepTable extends React.Component {
     // actions.querySteps();
   }
 
+  constructor() {
+    super()
+    this.errorMap = new Map()
+  }
+
   state = {
     selectedRow: null,
     newRow: null
@@ -65,7 +70,7 @@ class FlowStepTable extends React.Component {
       index: row,
       payload: newObject
     }
-    actions.update(action)
+    FlowActions.update(action)
     setTimeout(function() {
       this.setState({
         selectedRow: null,
@@ -81,7 +86,7 @@ class FlowStepTable extends React.Component {
       index: row,
       payload: newObject
     }
-    actions.create(action)
+    FlowActions.create(action)
     setTimeout(function() {
       this.setState({
         selectedRow: null,
@@ -99,7 +104,7 @@ class FlowStepTable extends React.Component {
       newObj.stepId = id
       newObj.organizationalUnit = 'REQUEST'
       newObj.stepType = 'REV'
-      actions.addNew(newObj)
+      FlowActions.addNew(newObj)
       setTimeout(function() {
         this.setState({
           newRow:0,
@@ -116,7 +121,8 @@ class FlowStepTable extends React.Component {
     console.log('Test Sequence')
     var fs = 1
     var firstStep = null
-    var steps = FlowStore.getSteps().steps
+    var steps = FlowStore.getStepFromSteps()
+    debugger
     for (var i = 0; i < steps.length; i++) {
       if (steps[i].stepId == fs) {
         firstStep = steps[i]
@@ -154,10 +160,14 @@ class FlowStepTable extends React.Component {
 
   }
 
+  setFirstStep() {
+    console.log('a')
+  }
+
   render() {
     var t = tables.steps
     var columnsDef = t.fields
-    var data = store.getSteps().steps
+    var data = FlowStore.getStepFromSteps()
     var pData = this.getTransformedData(t, data)
     let width = 1000
     let columnsWidth = this.calculateColumnsWidth(1000, columnsDef)
@@ -166,6 +176,7 @@ class FlowStepTable extends React.Component {
     return (
       <div>
         <button onClick={this.onAddNewRow}>Add Step</button>
+        <button onClick={this.setFirstStep}>Set First Step</button>
         <button onClick={this.onTestSequence}>Test Sequence</button>
         <TableComponent
           columnsWidth={columnsWidth}
@@ -179,7 +190,8 @@ class FlowStepTable extends React.Component {
           onCancelAddNewRow={this.onCancelAddNewRow}
           onSave={this.onSave}
           onCreate={this.onCreate}
-          perPage={perPage}>
+          perPage={perPage}
+          errorMap={this.errorMap}>
         </TableComponent>
       </div>
     )

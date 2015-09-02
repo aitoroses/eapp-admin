@@ -39,6 +39,13 @@ var validationRules = {
         var regExp = new RegExp(pattern)
         return regExp.test(str)
       }
+    },
+    in: {
+      errorId: 'eapp.admin.errors.text.in',
+      label: '',
+      validate: function(str, array) {
+        return array.indexOf(str) != -1
+      }
     }
   },
   checkbox: {

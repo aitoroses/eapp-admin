@@ -87,7 +87,7 @@ export class ItemsPermissionsResource extends Resource {
 
 export class DisclaimersResource extends Resource {
   constructor() {
-    super('np5services/np5confdisclaimer')
+    super('np5services/items/np5confdisclaimer')
   }
 }
 
